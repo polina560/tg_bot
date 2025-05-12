@@ -1,0 +1,82 @@
+{
+  "name": "yii-vue",
+  "version": "0.0.1",
+  "author": "peppers",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0 <=22.x.x",
+    "pnpm": ">=8.0.0 <=10.x.x"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^9.25.1",
+    "@types/ace": "^0.0.52",
+    "@types/bootstrap": "^5.2.10",
+    "@types/jquery": "^3.5.32",
+    "@types/lodash": "^4.17.16",
+    "@types/node": "^22.14.1",
+    "@types/select2": "^4.0.63",
+    "@typescript-eslint/eslint-plugin": "^8.31.0",
+    "@typescript-eslint/parser": "^8.31.0",
+    "@vitejs/plugin-legacy": "^6.1.0",
+    "@vitejs/plugin-vue": "^5.2.3",
+    "@vitejs/plugin-vue-jsx": "^4.1.2",
+    "@vue/eslint-config-typescript": "^14.5.0",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.25.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jquery": "^1.5.1",
+    "eslint-plugin-vue": "^9.33.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.3",
+    "sass": "^1.87.0",
+    "vite": "^6.3.3",
+    "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-live-reload": "^3.0.4",
+    "vue-eslint-parser": "^10.1.3",
+    "vue-router": "^4.5.0"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/vue-fontawesome": "^3.0.8",
+    "@highlightjs/vue-plugin": "^2.1.0",
+    "@popperjs/core": "^2.11.8",
+    "@vuepic/vue-datepicker": "^11.0.2",
+    "apexcharts": "^4.7.0",
+    "axios": "^1.8.4",
+    "bootstrap": "^5.3.5",
+    "highlight.js": "^11.11.1",
+    "jquery": "^3.7.1",
+    "lodash": "^4.17.21",
+    "pinia": "^3.0.2",
+    "terser": "^5.39.0",
+    "vue": "^3.5.13",
+    "vue-cookies": "^1.8.6",
+    "vue-dompurify-html": "^5.2.0",
+    "vue-loading-overlay": "^6.0.6",
+    "vue-markdown-render": "^2.2.1",
+    "vue-underscore": "^0.1.4",
+    "vue3-ace-editor": "^2.2.4",
+    "vue3-apexcharts": "^1.8.0",
+    "vue3-popper": "^1.5.0"
+  },
+  "scripts": {
+    "build": "vite build",
+    "serve-yii": "concurrently -n init,serve --hide init \"php init-all -u\" \"php yii serve -p 9001\"",
+    "serve-js": "vite --mode dev",
+    "start": "concurrently --kill-others npm:serve-*",
+    "lint": "eslint vue/**/*.{ts,tsx,js,jsx,cjs,mjs,vue} --fix",
+    "format": "prettier vue/**/*.{ts,tsx,js,jsx,cjs,mjs,vue} --write"
+  },
+  "web-types": "./web-types.json",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "core-js",
+      "esbuild"
+    ]
+  }
+}

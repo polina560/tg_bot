@@ -1,0 +1,7 @@
+suite_namespace: frontend\tests\acceptance
+actor: AcceptanceTester
+modules:
+    enabled:
+        - WebDriver
+        - Yii2:
+            part: init
