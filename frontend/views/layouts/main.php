@@ -46,16 +46,9 @@ $breadcrumbStyle = str_contains($containerClass, 'container-fluid') ? ' style="p
             $menuItems = [
                 [
                     'label' => VueIcon::widget(['icon' => 'home']) . "&nbsp;" . Yii::t('app', 'Home'),
-                    'url' => ['/site/index']
+                    'url' => ['/']
                 ],
-                [
-                    'label' => VueIcon::widget(['icon' => 'info']) . "&nbsp;" . Yii::t('app', 'About'),
-                    'url' => ['/site/about']
-                ],
-                [
-                    'label' => VueIcon::widget(['icon' => 'envelope']) . "&nbsp;" . Yii::t('app', 'Contact'),
-                    'url' => ['/site/contact']
-                ]
+
             ];
             if (Yii::$app->user->isGuest) {
                 if (Yii::$app->params['signup']['enabled_clients']['email-password']) {

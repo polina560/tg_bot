@@ -17,5 +17,5 @@ $this->title = Yii::$app->name;
             </div>
         <?php endif ?>
     </main-jumbotron>
-    <?= $this->render('index.pug') ?>
+
 </div>
