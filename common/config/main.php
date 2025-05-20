@@ -1,6 +1,7 @@
 <?php
 
 use codemix\streamlog\Target;
+use common\modules\telegram\SetWebHook;
 use common\components\{DbConnection, Environment, RedisConnection, UserFormatter, UserScreener};
 use common\components\twoFa\TwoFa;
 use common\modules\backup\Backup;
@@ -170,5 +171,8 @@ return [
         'backup' => [
             'class' => Backup::class,
         ],
+        'telegram' => [
+            'class' => SetWebHook::class
+        ]
     ],
 ];
