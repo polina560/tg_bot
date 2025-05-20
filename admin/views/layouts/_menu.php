@@ -5,7 +5,7 @@ use admin\models\UserAdminSearch;
 use admin\modules\modelExportImport\models\ModelImportLogSearch;
 use admin\modules\rbac\components\RbacNav;
 use common\components\helpers\UserUrl;
-use common\models\{ExportListSearch, TextSearch};
+use common\models\{ExportListSearch, TelegramMessageSearch, TelegramStateSearch, TextSearch};
 use common\modules\log\Log;
 use common\modules\mail\models\MailingLogSearch;
 use common\modules\notification\widgets\NotificationBell;
@@ -39,7 +39,19 @@ if (!Yii::$app->user->isGuest) {
     /** @var Log $logModule */
     $logModule = Yii::$app->getModule('log');
     $menuItems = [
-        ['label' => Icon::show('chart-bar') . 'Бот', 'url' => ['/bot/index']],
+        [
+            'label' => Icon::show('chart-bar') . 'Бот', 'url' => ['/bot/index'],
+            'items' => [
+                [
+                    'label' => Yii::t('app', 'Telegram States'),
+                    'url' => UserUrl::setFilters(TelegramStateSearch::class, ['/telegram-state/index'])
+                ],
+                [
+                    'label' => Yii::t('app', 'Telegram Messages'),
+                    'url' => UserUrl::setFilters(TelegramMessageSearch::class, ['/telegram-message/index'])
+                ],
+            ]
+        ],
         ['label' => Icon::show('chart-bar') . 'Статистика', 'url' => ['/statistic/index']],
         [
             'label' => Icon::show('users') . 'Пользователи',
