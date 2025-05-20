@@ -113,7 +113,8 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                'export/download/<filename:[\d\w\._-]+>' => 'export/download'
+                'export/download/<filename:[\d\w\._-]+>' => 'export/download',
+
             ]
         ]
     ],

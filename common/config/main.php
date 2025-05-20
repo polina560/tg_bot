@@ -1,7 +1,6 @@
 <?php
 
 use codemix\streamlog\Target;
-use common\modules\telegram\SetWebHook;
 use common\components\{DbConnection, Environment, RedisConnection, UserFormatter, UserScreener};
 use common\components\twoFa\TwoFa;
 use common\modules\backup\Backup;
@@ -11,6 +10,7 @@ use common\modules\mail\Mail;
 use common\modules\user\{enums\PasswordRestoreType, Module as User};
 use common\widgets\reCaptcha\ReCaptchaConfig;
 use kartik\datecontrol\Module as DateControl;
+use modules\telegram\TelegramBot;
 use Pug\Yii\ViewRenderer as PugViewRenderer;
 use yii\caching\DbCache;
 use yii\i18n\PhpMessageSource;
@@ -170,9 +170,6 @@ return [
         ],
         'backup' => [
             'class' => Backup::class,
-        ],
-        'telegram' => [
-            'class' => SetWebHook::class
         ]
     ],
 ];

@@ -1,5 +1,6 @@
 <?php
 
+use api\modules\telegram\TelegramBot;
 use api\modules\v1\Module;
 use common\components\{Environment, ErrorHandler, helpers\ModuleHelper, Request, UserUrlManager};
 use common\modules\user\models\User;
@@ -30,6 +31,9 @@ return [
         'v1' => [
             'class' => Module::class,
             'controllerMap' => []
+        ],
+        'telegram' => [
+            'class' => TelegramBot::class
         ]
     ],
 
@@ -117,7 +121,8 @@ return [
             'class' => UserUrlManager::class,
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => []
+            'rules' => [
+            ]
         ]
     ],
     'params' => $params
