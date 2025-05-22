@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= RbacHtml::encode($this->title) ?></h1>
 
     <div>
-        <?=
+        <?= 
             RbacHtml::a(Yii::t('app', 'Create Telegram Message'), ['create'], ['class' => 'btn btn-success']);
 //           $this->render('_create_modal', ['model' => $model]);
         ?>
@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             Column::widget(),
             Column::widget(['attr' => 'type']),
-            Column::widget(['attr' => 'text', 'format' => 'html']),
+            Column::widget(['attr' => 'text', 'format' => 'ntext']),
             Column::widget(['attr' => 'serial_number']),
             Column::widget(['attr' => 'command_id']),
 

@@ -6,9 +6,7 @@ use yii\bootstrap5\Html;
 
 /**
  * @var $this  yii\web\View
- * @var $modelMessage common\models\TelegramMessage
- * @var $modelsImages common\models\TelegramMessageImage[]
- * @var $modelsButtons common\models\TelegramMessageButton[]
+ * @var $model common\models\TelegramMessage
  */
 
 $this->title = Yii::t('app', 'Create Telegram Message');
@@ -22,11 +20,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <?= $this->render('_form', [
-        'modelMessage' => $modelMessage,
-        'modelsImages' => $modelsImages,
-//        'modelsButtons' => $modelsButtons,
-        'isCreate' => true
-    ]) ?>
+    <?= $this->render('_form', ['model' => $model, 'isCreate' => true]) ?>
 
 </div>

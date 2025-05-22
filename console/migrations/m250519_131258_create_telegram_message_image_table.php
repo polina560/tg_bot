@@ -15,6 +15,7 @@ class m250519_131258_create_telegram_message_image_table extends Migration
         $this->createTable('{{%telegram_message_image}}', [
             'id' => $this->primaryKey(),
             'telegram_message_id' => $this->integer()->notNull()->comment('ID сообщения'),
+            'image' => $this->string()->comment('Изображение'),
             'serial_number' => $this->integer()->comment('Порядковый номер'),
         ]);
         $this->addForeignKey(

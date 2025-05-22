@@ -13,8 +13,8 @@ use yii\helpers\ArrayHelper;
  * @property int                          $id
  * @property int                          $type          Тип состояния
  * @property string                       $text          Текст сообщения
- * @property int|null                     $serial_number порядковый номер
- * @property string|null                  $callback_data
+ * @property int|null                     $serial_number Порядковый номер
+ * @property string|null                  $command_id    Команда для вызова
  *
  * @property-read TelegramMessageButton[] $telegramMessageButtons
  * @property-read TelegramMessageImage[]  $telegramMessageImages
@@ -38,7 +38,7 @@ class TelegramMessage extends AppActiveRecord
             [['type', 'text'], 'required'],
             [['type', 'serial_number'], 'integer'],
             [['text'], 'string'],
-            [['callback_data'], 'string', 'max' => 255]
+            [['command_id'], 'string', 'max' => 255]
         ];
     }
 
@@ -52,7 +52,7 @@ class TelegramMessage extends AppActiveRecord
             'type' => Yii::t('app', 'Type'),
             'text' => Yii::t('app', 'Text'),
             'serial_number' => Yii::t('app', 'Serial Number'),
-            'callback_data' => Yii::t('app', 'Callback Data'),
+            'command_id' => Yii::t('app', 'Command ID'),
         ];
     }
 

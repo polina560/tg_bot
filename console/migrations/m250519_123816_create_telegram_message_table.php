@@ -16,8 +16,8 @@ class m250519_123816_create_telegram_message_table extends Migration
             'id' => $this->primaryKey(),
             'type' => $this->integer()->notNull()->comment('Тип состояния'),
             'text' => $this->text()->notNull()->comment('Текст сообщения'),
-            'serial_number' => $this->integer()->comment('порядковый номер'),
-            'callback_data' => $this->string(),
+            'serial_number' => $this->integer()->comment('Порядковый номер'),
+            'command_id' => $this->string()->comment('Команда для вызова'),
         ]);
     }
 

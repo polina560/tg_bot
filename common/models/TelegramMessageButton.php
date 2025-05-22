@@ -34,7 +34,6 @@ class TelegramMessageButton extends AppActiveRecord
     public function rules(): array
     {
         return [
-            [['telegram_message_id', 'btn_name'], 'required'],
             [['telegram_message_id', 'serial_number'], 'integer'],
             [['text', 'btn_name'], 'string', 'max' => 255],
             [['telegram_message_id'], 'exist', 'skipOnError' => true, 'targetClass' => TelegramMessage::class, 'targetAttribute' => ['telegram_message_id' => 'id']]

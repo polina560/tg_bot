@@ -4,6 +4,7 @@ namespace api\modules\telegram\commands;
 
 use common\models\TelegramMessage;
 use common\models\TelegramMessageButton;
+use common\models\TelegramMessageImage;
 use Longman\TelegramBot\Commands\UserCommand;
 
 class StartCommand extends UserCommand
@@ -16,8 +17,8 @@ class StartCommand extends UserCommand
 
     public function execute(): \Longman\TelegramBot\Entities\ServerResponse
     {
-        $text = TelegramMessage::find()->where(['callback_data' => $this->usage])->one();
-        $button = TelegramMessageButton::find()->where()->all();
-        return $this->replyToChat("Привет! Я бот!");
+        $text = TelegramMessage::find()->where(['command_id' => $this->usage])->one();
+        $image = TelegramMessageImage::find()->where(['telegram_message_id' => $text->id])->all();
+        return $this->replyToChat($text->text, $image->image);
     }
 }

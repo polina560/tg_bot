@@ -18,7 +18,7 @@ final class TelegramMessageSearch extends TelegramMessage
     {
         return [
             [['id', 'type', 'serial_number'], 'integer'],
-            [['text', 'callback_data'], 'safe']
+            [['text', 'command_id'], 'safe']
         ];
     }
 
@@ -60,7 +60,7 @@ final class TelegramMessageSearch extends TelegramMessage
         ]);
 
         $query->andFilterWhere(['like', 'text', $this->text])
-            ->andFilterWhere(['like', 'callback_data', $this->callback_data]);
+            ->andFilterWhere(['like', 'command_id', $this->command_id]);
 
         return $dataProvider;
     }

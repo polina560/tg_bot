@@ -12,6 +12,7 @@ use yii\helpers\ArrayHelper;
  *
  * @property int                  $id
  * @property int                  $telegram_message_id ID сообщения
+ * @property string|null          $image               Изображение
  * @property int|null             $serial_number       Порядковый номер
  *
  * @property-read TelegramMessage $telegramMessage
@@ -32,8 +33,8 @@ class TelegramMessageImage extends AppActiveRecord
     public function rules(): array
     {
         return [
-            [['telegram_message_id'], 'required'],
             [['telegram_message_id', 'serial_number'], 'integer'],
+            [['image'], 'string', 'max' => 255],
             [['telegram_message_id'], 'exist', 'skipOnError' => true, 'targetClass' => TelegramMessage::class, 'targetAttribute' => ['telegram_message_id' => 'id']]
         ];
     }
@@ -46,6 +47,7 @@ class TelegramMessageImage extends AppActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'telegram_message_id' => Yii::t('app', 'Telegram Message ID'),
+            'image' => Yii::t('app', 'Image'),
             'serial_number' => Yii::t('app', 'Serial Number'),
         ];
     }

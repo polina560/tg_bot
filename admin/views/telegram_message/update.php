@@ -6,30 +6,23 @@ use yii\bootstrap5\Html;
 
 /**
  * @var $this  yii\web\View
- * @var $modelMessage common\models\TelegramMessage
- * @var $modelsImages common\models\TelegramMessageImage[]
- * @var $modelsButtons common\models\TelegramMessageButton[]
+ * @var $model common\models\TelegramMessage
  */
 
 $this->title = Yii::t('app', 'Update Telegram Message: {name}', [
-    'name' => $modelMessage->id,
+    'name' => $model->id,
 ]);
 $this->params['breadcrumbs'][] = [
     'label' => Yii::t('app', 'Telegram Messages'),
     'url' => UserUrl::setFilters(TelegramMessageSearch::class)
 ];
-$this->params['breadcrumbs'][] = ['label' => Html::encode($modelMessage->id), 'url' => ['view', 'id' => $modelMessage->id]];
+$this->params['breadcrumbs'][] = ['label' => Html::encode($model->id), 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
 <div class="telegram-message-update">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <?= $this->render('_form', [
-        'modelMessage' => $modelMessage,
-        'modelsImages' => $modelsImages,
-//        'modelsButtons' => $modelsButtons,
-        'isCreate' => false
-    ]) ?>
+    <?= $this->render('_form', ['model' => $model, 'isCreate' => false]) ?>
 
 </div>
