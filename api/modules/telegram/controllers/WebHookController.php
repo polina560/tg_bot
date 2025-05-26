@@ -9,7 +9,7 @@ use yii\web\Response;
 
 class WebHookController extends Controller
 {
-    public $layout = false; // Важно отключить layout
+    public $layout = false;
 
     public function beforeAction($action)
     {
@@ -25,7 +25,6 @@ class WebHookController extends Controller
                 Yii::$app->environment->BOT_USERNAME
             );
 
-            // Отключаем все лишнее
             $telegram->useGetUpdatesWithoutDatabase();
 
             $telegram->addCommandsPaths([
@@ -33,6 +32,7 @@ class WebHookController extends Controller
             ]);
 
             return $telegram->handle();
+
 
         } catch (\Throwable $e) {
             Yii::error($e);

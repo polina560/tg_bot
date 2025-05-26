@@ -5,7 +5,12 @@ use admin\models\UserAdminSearch;
 use admin\modules\modelExportImport\models\ModelImportLogSearch;
 use admin\modules\rbac\components\RbacNav;
 use common\components\helpers\UserUrl;
-use common\models\{ExportListSearch, TelegramMessageSearch, TelegramStateSearch, TextSearch};
+use common\models\{ExportListSearch,
+    TelegramButtonSearch,
+    TelegramImageSearch,
+    TelegramMessageSearch,
+    TelegramStateSearch,
+    TextSearch};
 use common\modules\log\Log;
 use common\modules\mail\models\MailingLogSearch;
 use common\modules\notification\widgets\NotificationBell;
@@ -43,12 +48,16 @@ if (!Yii::$app->user->isGuest) {
             'label' => Icon::show('chart-bar') . 'Бот', 'url' => ['/bot/index'],
             'items' => [
                 [
-                    'label' => Yii::t('app', 'Telegram States'),
-                    'url' => UserUrl::setFilters(TelegramStateSearch::class, ['/telegram-state/index'])
-                ],
-                [
                     'label' => Yii::t('app', 'Telegram Messages'),
                     'url' => UserUrl::setFilters(TelegramMessageSearch::class, ['/telegram-message/index'])
+                ],
+                [
+                    'label' => Yii::t('app', 'Telegram Images'),
+                    'url' => UserUrl::setFilters(TelegramImageSearch::class, ['/telegram-image/index'])
+                ],
+                [
+                    'label' => Yii::t('app', 'Telegram Buttons'),
+                    'url' => UserUrl::setFilters(TelegramButtonSearch::class, ['/telegram-button/index'])
                 ],
             ]
         ],

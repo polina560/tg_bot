@@ -9,21 +9,21 @@ use yii\widgets\ListView;
 
 /**
  * @var $this         yii\web\View
- * @var $searchModel  common\models\TelegramMessageSearch
+ * @var $searchModel  common\models\TelegramButtonSearch
  * @var $dataProvider yii\data\ActiveDataProvider
- * @var $model        common\models\TelegramMessage
+ * @var $model        common\models\TelegramButton
  */
 
-$this->title = Yii::t('app', 'Telegram Messages');
+$this->title = Yii::t('app', 'Telegram Buttons');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="telegram-message-index">
+<div class="telegram-button-index">
 
     <h1><?= RbacHtml::encode($this->title) ?></h1>
 
     <div>
         <?= 
-            RbacHtml::a(Yii::t('app', 'Create Telegram Message'), ['create'], ['class' => 'btn btn-success']);
+            RbacHtml::a(Yii::t('app', 'Create Telegram Button'), ['create'], ['class' => 'btn btn-success']);
 //           $this->render('_create_modal', ['model' => $model]);
         ?>
     </div>
@@ -36,10 +36,9 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => SerialColumn::class],
 
             Column::widget(),
-            Column::widget(['attr' => 'type']),
-            Column::widget(['attr' => 'text', 'format' => 'ntext']),
+            Column::widget(['attr' => 'title']),
+            Column::widget(['attr' => 'key']),
             Column::widget(['attr' => 'serial_number']),
-            Column::widget(['attr' => 'command_id']),
 
             ['class' => GroupedActionColumn::class]
         ]

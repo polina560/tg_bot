@@ -14,8 +14,9 @@ class m250522_081009_create_telegram_button_table extends Migration
     {
         $this->createTable('{{%telegram_button}}', [
             'id' => $this->primaryKey(),
-            'created_at' => $this->integer()->notNull()->comment('Дата создания'),
-            'updated_at' => $this->integer()->notNull()->comment('Дата изменения'),
+            'title' => $this->string(),
+            'key' => $this->string(),
+            'serial_number' => $this->integer()
         ]);
     }
 

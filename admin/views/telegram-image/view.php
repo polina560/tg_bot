@@ -3,22 +3,22 @@
 use admin\components\widgets\detailView\Column;
 use admin\modules\rbac\components\RbacHtml;
 use common\components\helpers\UserUrl;
-use common\models\TelegramMessageSearch;
+use common\models\TelegramImageSearch;
 use yii\widgets\DetailView;
 
 /**
  * @var $this  yii\web\View
- * @var $model common\models\TelegramMessage
+ * @var $model common\models\TelegramImage
  */
 
 $this->title = $model->id;
 $this->params['breadcrumbs'][] = [
-    'label' => Yii::t('app', 'Telegram Messages'),
-    'url' => UserUrl::setFilters(TelegramMessageSearch::class)
+    'label' => Yii::t('app', 'Telegram Images'),
+    'url' => UserUrl::setFilters(TelegramImageSearch::class)
 ];
 $this->params['breadcrumbs'][] = RbacHtml::encode($this->title);
 ?>
-<div class="telegram-message-view">
+<div class="telegram-image-view">
 
     <h1><?= RbacHtml::encode($this->title) ?></h1>
 
@@ -41,9 +41,9 @@ $this->params['breadcrumbs'][] = RbacHtml::encode($this->title);
         'model' => $model,
         'attributes' => [
             Column::widget(),
-            Column::widget(['attr' => 'text', 'format' => 'ntext']),
-            Column::widget(['attr' => 'serial_number']),
+            Column::widget(['attr' => 'image']),
             Column::widget(['attr' => 'key']),
+            Column::widget(['attr' => 'serial_number']),
         ]
     ]) ?>
 

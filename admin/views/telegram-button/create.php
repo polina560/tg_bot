@@ -1,22 +1,22 @@
 <?php
 
 use common\components\helpers\UserUrl;
-use common\models\TelegramMessageSearch;
+use common\models\TelegramButtonSearch;
 use yii\bootstrap5\Html;
 
 /**
  * @var $this  yii\web\View
- * @var $model common\models\TelegramMessage
+ * @var $model common\models\TelegramButton
  */
 
-$this->title = Yii::t('app', 'Create Telegram Message');
+$this->title = Yii::t('app', 'Create Telegram Button');
 $this->params['breadcrumbs'][] = [
-    'label' => Yii::t('app', 'Telegram Messages'),
-    'url' => UserUrl::setFilters(TelegramMessageSearch::class)
+    'label' => Yii::t('app', 'Telegram Buttons'),
+    'url' => UserUrl::setFilters(TelegramButtonSearch::class)
 ];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="telegram-message-create">
+<div class="telegram-button-create">
 
     <h1><?= Html::encode($this->title) ?></h1>
 

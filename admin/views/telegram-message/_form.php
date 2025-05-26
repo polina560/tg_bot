@@ -23,13 +23,11 @@ use yii\helpers\Url;
     <?php
     $form = AppActiveForm::begin() ?>
 
-    <?= $form->field($modelMessage, 'type')->textInput() ?>
-
     <?= $form->field($modelMessage, 'text')->textarea(['rows' => 6]) ?>
 
     <?= $form->field($modelMessage, 'serial_number')->textInput() ?>
 
-    <?= $form->field($modelMessage, 'command_id')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($modelMessage, 'key')->textInput(['maxlength' => true]) ?>
 
     <div class="panel panel-default">
         <div class="panel-body">

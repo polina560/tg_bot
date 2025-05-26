@@ -7,9 +7,9 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
 /**
- * TelegramMessageSearch represents the model behind the search form of `common\models\TelegramMessage`.
+ * TelegramImageSearch represents the model behind the search form of `common\models\TelegramImage`.
  */
-final class TelegramMessageSearch extends TelegramMessage
+final class TelegramImageSearch extends TelegramImage
 {
     /**
      * {@inheritdoc}
@@ -18,7 +18,7 @@ final class TelegramMessageSearch extends TelegramMessage
     {
         return [
             [['id', 'serial_number'], 'integer'],
-            [['text', 'key'], 'safe']
+            [['image', 'key'], 'safe']
         ];
     }
 
@@ -38,7 +38,7 @@ final class TelegramMessageSearch extends TelegramMessage
      */
     public function search(array $params): ActiveDataProvider
     {
-        $query = TelegramMessage::find();
+        $query = TelegramImage::find();
 
         // add conditions that should always apply here
 
@@ -58,7 +58,7 @@ final class TelegramMessageSearch extends TelegramMessage
             'serial_number' => $this->serial_number,
         ]);
 
-        $query->andFilterWhere(['like', 'text', $this->text])
+        $query->andFilterWhere(['like', 'image', $this->image])
             ->andFilterWhere(['like', 'key', $this->key]);
 
         return $dataProvider;

@@ -27,6 +27,7 @@ class BotController extends Controller
 
             if ($result->isOk()) {
                 file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message.txt', print_r($result->getDescription(), true));
+
             }
         } catch (TelegramException $e) {
             file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message.txt', print_r($e->getMessage(), true));

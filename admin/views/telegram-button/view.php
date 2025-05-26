@@ -3,22 +3,22 @@
 use admin\components\widgets\detailView\Column;
 use admin\modules\rbac\components\RbacHtml;
 use common\components\helpers\UserUrl;
-use common\models\TelegramMessageSearch;
+use common\models\TelegramButtonSearch;
 use yii\widgets\DetailView;
 
 /**
  * @var $this  yii\web\View
- * @var $model common\models\TelegramMessage
+ * @var $model common\models\TelegramButton
  */
 
-$this->title = $model->id;
+$this->title = $model->title;
 $this->params['breadcrumbs'][] = [
-    'label' => Yii::t('app', 'Telegram Messages'),
-    'url' => UserUrl::setFilters(TelegramMessageSearch::class)
+    'label' => Yii::t('app', 'Telegram Buttons'),
+    'url' => UserUrl::setFilters(TelegramButtonSearch::class)
 ];
 $this->params['breadcrumbs'][] = RbacHtml::encode($this->title);
 ?>
-<div class="telegram-message-view">
+<div class="telegram-button-view">
 
     <h1><?= RbacHtml::encode($this->title) ?></h1>
 
@@ -41,10 +41,9 @@ $this->params['breadcrumbs'][] = RbacHtml::encode($this->title);
         'model' => $model,
         'attributes' => [
             Column::widget(),
-            Column::widget(['attr' => 'type']),
-            Column::widget(['attr' => 'text', 'format' => 'ntext']),
+            Column::widget(['attr' => 'title']),
+            Column::widget(['attr' => 'key']),
             Column::widget(['attr' => 'serial_number']),
-            Column::widget(['attr' => 'command_id']),
         ]
     ]) ?>
 

@@ -7,23 +7,21 @@ use yii\helpers\Url;
 
 /**
  * @var $this     yii\web\View
- * @var $model    common\models\TelegramMessage
+ * @var $model    common\models\TelegramButton
  * @var $form     AppActiveForm
  * @var $isCreate bool
  */
 ?>
 
-<div class="telegram-message-form">
+<div class="telegram-button-form">
 
     <?php $form = AppActiveForm::begin() ?>
 
-    <?= $form->field($model, 'type')->textInput() ?>
+    <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'text')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'key')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'serial_number')->textInput() ?>
-
-    <?= $form->field($model, 'command_id')->textInput(['maxlength' => true]) ?>
 
     <div class="form-group">
         <?php if ($isCreate) {

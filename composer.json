@@ -70,7 +70,8 @@
     "yiisoft/yii2-queue": "^2.3",
     "yiisoft/yii2-redis": "^2.0",
     "yiisoft/yii2-symfonymailer": "^2.0.0",
-    "longman/telegram-bot": "*"
+    "longman/telegram-bot": "*",
+    "php-telegram-bot/fluent-keyboard": "^1.2"
 
   },
   "require-dev": {
