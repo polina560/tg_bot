@@ -2,6 +2,7 @@
 
 namespace api\modules\telegram\commands;
 
+use api\modules\telegram\TelegramBot;
 use common\models\TelegramMessage;
 use common\models\TelegramMessageButton;
 use common\models\TelegramMessageImage;
@@ -41,12 +42,13 @@ class StartCommand extends UserCommand
         //проверка подписки на канал
         if (!in_array($status, $member_statuses)) {
             $text = TelegramMessage::find()->where(['key' => 'notMember'])->one();
-            if ($media_group = $this->imageToArray($text)) {
-                $result = Request::sendMediaGroup([
-                    'chat_id' => $bot_username,
-                    'media' => $media_group,
+            if ($media_group = TelegramBot::imageToArray($text)) {
+
+                $result = Request::sendMessage([
+                    'chat_id' => $chat_id,
+                    'text' => $text->text,
                     'reply_markup' => new InlineKeyboard([
-                        ['text' => 'Подписался', 'callback_data' => 'is-member']
+                        ['text' => 'Получить монеты', 'callback_data' => 'get-money']
                     ])
                 ]);
 
@@ -55,7 +57,7 @@ class StartCommand extends UserCommand
         } else {
             $text = TelegramMessage::find()->where(['key' => $this->usage])->one();
 
-            $media_group = $this->imageToArray($text);
+            $media_group = TelegramBot::imageToArray($text);
             Request::sendMediaGroup([
                 'chat_id' => $chat_id,
                 'media' => $media_group,
@@ -73,26 +75,6 @@ class StartCommand extends UserCommand
         return $this->replyToChat($text->text);
     }
 
-    /**
-     * @param TelegramMessage        $text
-     * @param TelegramMessageImage[] $images
-     */
-    private function imageToArray(TelegramMessage $text)
-    {
-        if ($images = TelegramMessageImage::find()->where(['telegram_message_id' => $text->id])->all()) {
-            foreach ($images as $index => $image) {
-                if ($index == 0) {
-                    $media_group[] = new InputMediaPhoto(
-                        ['media' => Yii::getAlias('@htdocs') . $image->image, 'caption' => $text->text]
-                    );
-                } else {
-                    $media_group[] = new InputMediaPhoto(['media' => Yii::getAlias('@htdocs') . $image->image]);
-                }
-            }
-            return $media_group;
-        } else {
-            return [];
-        }
-    }
+
 
 }
