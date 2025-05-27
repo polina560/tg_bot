@@ -3,6 +3,7 @@
 namespace api\modules\telegram\controllers;
 
 use Longman\TelegramBot\Exception\TelegramException;
+use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use Yii;
 use yii\base\Controller;
@@ -17,7 +18,10 @@ class BotController extends Controller
 
     public function actionSet()
     {
-        file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message.txt', print_r(Yii::$app->environment->WEB_HOOK_URL, true));
+        file_put_contents(
+            Yii::getAlias('@htdocs/uploads') . '/message.txt',
+            print_r(Yii::$app->environment->WEB_HOOK_URL, true)
+        );
 
         try {
             $telegram = new Telegram(Yii::$app->environment->BOT_TOKEN, Yii::$app->environment->BOT_USERNAME);
@@ -26,12 +30,24 @@ class BotController extends Controller
             $result = $telegram->setWebhook($hook_url);
 
             if ($result->isOk()) {
-                file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message.txt', print_r($result->getDescription(), true));
+                $commands = [
+                    ['command' => 'start', 'description' => 'Запуск бота'],
+                    ['command' => 'info', 'description' => 'Информация о боте'],
+                ];
 
+                $commandResult = Request::setMyCommands([
+                    'commands' => json_encode($commands),
+                ]);
+
+                file_put_contents(
+                    Yii::getAlias('@htdocs/uploads/telegram_log.txt'),
+                    "Webhook set: " . print_r($result->getRawData(), true) . "\n" .
+                    "Commands set: " . print_r($commandResult->getRawData(), true),
+                    FILE_APPEND
+                );
             }
         } catch (TelegramException $e) {
             file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message.txt', print_r($e->getMessage(), true));
-
         }
     }
 
@@ -44,11 +60,11 @@ class BotController extends Controller
             $telegram = new Telegram(Yii::$app->environment->BOT_TOKEN, Yii::$app->environment->BOT_USERNAME);
 
             $result = $telegram->deleteWebhook();
-            file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message.txt', print_r($result->getDescription(), true));
-
-
+            file_put_contents(
+                Yii::getAlias('@htdocs/uploads') . '/message.txt',
+                print_r($result->getDescription(), true)
+            );
         } catch (TelegramException $e) {
-
             file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message.txt', print_r($e->getMessage(), true));
         }
     }
