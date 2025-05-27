@@ -3,6 +3,8 @@
 namespace api\modules\telegram\commands;
 
 use api\modules\telegram\TelegramBot;
+use common\components\exceptions\ModelSaveException;
+use common\models\DialogState;
 use common\models\TelegramMessage;
 use common\models\TelegramMessageButton;
 use common\models\TelegramMessageImage;
@@ -29,7 +31,6 @@ class StartCommand extends UserCommand
     {
         $message = $this->getMessage();
         $chat_id = $message->getFrom()->getId();
-        $bot_username = Yii::$app->environment->BOT_USERNAME;
         $user_id = $message->getFrom()->getId();
 
         $member = Request::getChatMember(['chat_id' => $chat_id, 'user_id' => $user_id])->toJson();
@@ -39,21 +40,41 @@ class StartCommand extends UserCommand
 
         file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message.txt', print_r($status, true));
 
+//        try {
+//            $dialog = DialogState::find()->where(['user_id' => $user_id])->one();
+//            if (!empty($dialog)) {
+//                $dialog->delete();
+//            }
+//            $dialog = new DialogState();
+//            $dialog->user_id = $user_id;
+//            $dialog->chat_id = $chat_id;
+//            $dialog->last_msg_time = time();
+//            $dialog->last_msg_id = 0;
+//
+//            if (!$dialog->save()) {
+//                file_put_contents(
+//                    Yii::getAlias('@htdocs/uploads') . '/message.txt',
+//                    print_r(new ModelSaveException($dialog), true)
+//                );
+//                new ModelSaveException($dialog);
+//            }
+//        } catch (\Exception $e) {
+////        }
+
+
         //проверка подписки на канал
         if (!in_array($status, $member_statuses)) {
             $text = TelegramMessage::find()->where(['key' => 'notMember'])->one();
-            if ($media_group = TelegramBot::imageToArray($text)) {
 
-                $result = Request::sendMessage([
-                    'chat_id' => $chat_id,
-                    'text' => $text->text,
-                    'reply_markup' => new InlineKeyboard([
-                        ['text' => 'Получить монеты', 'callback_data' => 'get-money']
-                    ])
-                ]);
+            $result = Request::sendMessage([
+                'chat_id' => $chat_id,
+                'text' => $text->text,
+                'reply_markup' => new InlineKeyboard([
+                    ['text' => 'Подписался', 'callback_data' => 'is-member']
+                ])
+            ]);
 
-                return $result;
-            }
+            return $result;
         } else {
             $text = TelegramMessage::find()->where(['key' => $this->usage])->one();
 
@@ -72,9 +93,8 @@ class StartCommand extends UserCommand
             ]);
             return $result;
         }
-        return $this->replyToChat($text->text);
+//        return $this->replyToChat($text->text);
     }
-
 
 
 }
