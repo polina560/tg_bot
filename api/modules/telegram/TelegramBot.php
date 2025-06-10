@@ -19,13 +19,13 @@ class TelegramBot extends Module
      * @param TelegramMessage        $text
      * @param TelegramMessageImage[] $images
      */
-    static public function imageToArray(TelegramMessage $text)
+    static public function imageToArray(TelegramMessage $text, int $price = 0, int $reminder = 0)
     {
         if ($images = TelegramMessageImage::find()->where(['telegram_message_id' => $text->id])->all()) {
             foreach ($images as $index => $image) {
                 if ($index == 0) {
                     $media_group[] = new InputMediaPhoto(
-                        ['media' => Yii::getAlias('@htdocs') . $image->image, 'caption' => $text->text]
+                        ['media' => Yii::getAlias('@htdocs') . $image->image, 'caption' => sprintf($text->text, $price, $reminder)]
                     );
                 } else {
                     $media_group[] = new InputMediaPhoto(['media' => Yii::getAlias('@htdocs') . $image->image]);

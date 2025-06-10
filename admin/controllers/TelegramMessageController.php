@@ -85,22 +85,22 @@ final class TelegramMessageController extends AdminController
     {
         $model = new TelegramMessage();
         $modelsImages = [new TelegramMessageImage()];
-//        $modelsButtons = [new TelegramMessageButton()];
+        $modelsButtons = [new TelegramMessageButton()];
 
         if ($model->load(Yii::$app->request->post())) {
             $modelsImages = TelegramMessageImage::createMultiple();
             TelegramMessageImage::loadMultiple($modelsImages, Yii::$app->request->post());
 
-//            $modelsButtons = TelegramMessageButton::createMultiple();
-//            TelegramMessageButton::loadMultiple($modelsButtons, Yii::$app->request->post());
+            $modelsButtons = TelegramMessageButton::createMultiple();
+            TelegramMessageButton::loadMultiple($modelsButtons, Yii::$app->request->post());
 
             $valid = $model->validate()
-                && TelegramMessageImage::validateMultiple($modelsImages);
-//                && TelegramMessageButton::validateMultiple($modelsButtons);
+                && TelegramMessageImage::validateMultiple($modelsImages)
+                && TelegramMessageButton::validateMultiple($modelsButtons);
 
             if ($valid && $transaction = Yii::$app->db->beginTransaction()) {
                 try {
-                    if ($this->_saveModels($model, $modelsImages)) {
+                    if ($this->_saveModels($model, $modelsImages) && $this->_saveModels($model, $modelsButtons)) {
                         $transaction->commit();
                         return $this->redirect(['view', 'id' => $model->id]);
                     }
@@ -116,7 +116,7 @@ final class TelegramMessageController extends AdminController
         return $this->render('create', [
             'modelMessage' => $model,
             'modelsImages' => (empty($modelsImages)) ? [new TelegramMessageImage()] : $modelsImages,
-//            'modelsButtons' => (empty($modelsButtons)) ? [new TelegramMessageButton()] : $modelsButtons,
+            'modelsButtons' => (empty($modelsButtons)) ? [new TelegramMessageButton()] : $modelsButtons,
         ]);
     }
 
@@ -132,7 +132,7 @@ final class TelegramMessageController extends AdminController
     {
         $model = $this->findModel($id);
         $modelImages = $model->telegramMessageImages;
-//        $modelButtons = $model->telegramMessageButtons;
+        $modelButtons = $model->telegramMessageButtons;
 
         $pkey = 'id';
 
@@ -142,10 +142,10 @@ final class TelegramMessageController extends AdminController
             TelegramMessageImage::loadMultiple($modelImages, Yii::$app->request->post());
             $deletedImageIDs = array_diff($oldImageIDs, array_filter(ArrayHelper::map($modelImages, $pkey, $pkey)));
 
-//            $oldButtonIDs = ArrayHelper::map($modelButtons, $pkey, $pkey);
-//            $modelButtons = TelegramMessageButton::createMultiple($modelButtons);
-//            TelegramMessageButton::loadMultiple($modelButtons, Yii::$app->request->post());
-//            $deletedButtonIDs = array_diff($oldButtonIDs, array_filter(ArrayHelper::map($modelButtons, $pkey, $pkey)));
+            $oldButtonIDs = ArrayHelper::map($modelButtons, $pkey, $pkey);
+            $modelButtons = TelegramMessageButton::createMultiple($modelButtons);
+            TelegramMessageButton::loadMultiple($modelButtons, Yii::$app->request->post());
+            $deletedButtonIDs = array_diff($oldButtonIDs, array_filter(ArrayHelper::map($modelButtons, $pkey, $pkey)));
 
             $valid = $model->validate()
                 && TelegramMessageImage::validateMultiple($modelImages);

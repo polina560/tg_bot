@@ -54,17 +54,11 @@ class CallbackqueryCommand extends SystemCommand
 
     protected function handleAnswerGetMoney($chat_id, $user_id): ServerResponse
     {
-        file_put_contents(
-            Yii::getAlias('@htdocs/uploads') . '/message.txt',
-            print_r('GetMoney', true)
-        );
         try {
-            // 1. Получаем данные сообщения
             $text = TelegramMessage::find()
                 ->where(['key' => 'play'])
                 ->andWhere(['serial_number' => 1])
                 ->one();
-
             if (!$text) {
                 throw new \Exception('Сообщение не найдено');
             }
@@ -80,8 +74,6 @@ class CallbackqueryCommand extends SystemCommand
                 throw new \Exception('Ошибка отправки медиа: ' . $mediaResponse->getDescription());
             }
 
-
-//             3. Создаем и отправляем сообщение с кнопками
             $inline_keyboard = new InlineKeyboard([
                 ['text' => '1', 'callback_data' => 'play_1'],
                 ['text' => '2', 'callback_data' => 'play_2'],
@@ -105,6 +97,7 @@ class CallbackqueryCommand extends SystemCommand
             $dialog->chat_id = $chat_id;
             $dialog->last_msg_time = time();
             $dialog->last_msg_id = 1;
+            $dialog->remainder = 5000; //TODO: занести значения в БД
 
             if (!$dialog->save()) {
                 file_put_contents(
@@ -114,7 +107,6 @@ class CallbackqueryCommand extends SystemCommand
                 new ModelSaveException($dialog);
             }
 
-            // 4. Отвечаем на callback запрос
             Request::answerCallbackQuery([
                 'text' => 'Монеты будут зачислены скоро!',
                 'show_alert' => true,
@@ -165,47 +157,94 @@ class CallbackqueryCommand extends SystemCommand
 
     protected function handleActionPlay($chat_id, $user_id, $message_id, int $number): ServerResponse
     {
-        //TODO: проверка на конец опроса
         $dialog = DialogState::find()->where(['user_id' => $user_id])->one();
-        $dialog->last_msg_id += 0;
         if ($dialog->last_msg_id >= 5) {
+            Request::deleteMessage([
+                'chat_id' => $chat_id,
+                'message_id' => $message_id
+            ]);
             return Request::sendMessage([
                 'chat_id' => $chat_id,
                 'text' => 'конец'
             ]);
         }
+
+        $price = 0;
+        $remainder = 0;
         switch ($number) {
             case 1:
-                //TODO: запомнить выбор
+                $price = 1; //TODO: цены в кнопках
+                if ($price <= $dialog->remainder) {
+                    $remainder = $dialog->remainder - 1;
+                    $dialog->ans_1 += 1;
+                } else {
+                    return Request::sendMessage([
+                        'chat_id' => $chat_id,
+                        'text' => 'нет монет'
+                    ]);
+                }
+                break;
             case 2:
-                //TODO: запомнить выбор
+                $price = 2; //TODO: цены в кнопках
+                if ($price <= $dialog->remainder) {
+                    $remainder = $dialog->remainder - 2;
+                    $dialog->ans_2 += 1;
+                } else {
+                    return Request::sendMessage([
+                        'chat_id' => $chat_id,
+                        'text' => 'нет монет'
+                    ]);
+                }
+                break;
             case 3:
-
-                //TODO: запомнить выбор
+                $price = 3; //TODO: цены в кнопках
+                if ($price <= $dialog->remainder) {
+                    $remainder = $dialog->remainder - 3;
+                    $dialog->ans_3 += 1;
+                } else {
+                    return Request::sendMessage([
+                        'chat_id' => $chat_id,
+                        'text' => 'нект монет'
+                    ]);
+                }
+                break;
             case 4:
-
-                //TODO: запомнить выбор
+                $price = 4; //TODO: цены в кнопках
+                if ($price <= $dialog->remainder) {
+                    $remainder = $dialog->remainder - 4;
+                    $dialog->ans_4 += 1;
+                } else {
+                    return Request::sendMessage([
+                        'chat_id' => $chat_id,
+                        'text' => 'нект монет'
+                    ]);
+                }
+                break;
             case 5:
-
-                //TODO: запомнить выбор
+                $price = 5; //TODO: цены в кнопках
+                if ($price <= $dialog->remainder) {
+                    $remainder = $dialog->remainder - 5;
+                    $dialog->ans_5 += 1;
+                } else {
+                    return Request::sendMessage([
+                        'chat_id' => $chat_id,
+                        'text' => 'нект монет'
+                    ]);
+                }
+                break;
             default:
                 break;
         }
-        $dialog->last_msg_id += 1;
-        $dialog->last_msg_time = time();
-        if (!$dialog->save()) {
-            throw new ModelSaveException($dialog);
-        }
 
         Request::deleteMessage([
-           'chat_id' => $chat_id,
-           'message_id' => $message_id
+            'chat_id' => $chat_id,
+            'message_id' => $message_id
         ]);
 
-        $text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(['serial_number' => $dialog->last_msg_id]
+        $text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(['serial_number' => $dialog->last_msg_id+1]
         )->one();
         if ($text) {
-            if ($media_group = TelegramBot::imageToArray($text)) {
+            if ($media_group = TelegramBot::imageToArray($text, $price, $remainder)) {
                 $mediaResponse = Request::sendMediaGroup([
                     'chat_id' => $chat_id,
                     'media' => $media_group
@@ -213,9 +252,16 @@ class CallbackqueryCommand extends SystemCommand
             } else {
                 $mediaResponse = Request::sendMessage([
                     'chat_id' => $chat_id,
-                    'text' => $text->text
+                    'text' => sprintf($text->text, $price, $remainder)
                 ]);
             }
+        }
+
+        $dialog->remainder = $remainder;
+        $dialog->last_msg_id += 1;
+        $dialog->last_msg_time = time();
+        if (!$dialog->save()) {
+            throw new ModelSaveException($dialog);
         }
 
         $inline_keyboard = new InlineKeyboard([
@@ -233,10 +279,10 @@ class CallbackqueryCommand extends SystemCommand
         ]);
 
         // 4. Отвечаем на callback запрос
-        Request::answerCallbackQuery([
-            'text' => 'Ответ принят',
-            'show_alert' => true,
-        ]);
+//        Request::answerCallbackQuery([
+//            'text' => 'Ответ принят',
+//            'show_alert' => true,
+//        ]);
 
         return $messageResponse;
     }
