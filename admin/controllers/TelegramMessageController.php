@@ -148,23 +148,22 @@ final class TelegramMessageController extends AdminController
             $deletedButtonIDs = array_diff($oldButtonIDs, array_filter(ArrayHelper::map($modelButtons, $pkey, $pkey)));
 
             $valid = $model->validate()
-                && TelegramMessageImage::validateMultiple($modelImages);
-//                && TelegramMessageButton::validateMultiple($modelButtons);
+                && TelegramMessageImage::validateMultiple($modelImages)
+                && TelegramMessageButton::validateMultiple($modelButtons);
 
             if ($valid && $transaction = Yii::$app->db->beginTransaction()) {
                 try {
                     if (!empty($deletedImageIDs)) {
                         TelegramMessageImage::deleteAll([$pkey => $deletedImageIDs]);
                     }
-//                    if (!empty($deletedButtonIDs)) {
-//                        TelegramMessageButton::deleteAll([$pkey => $deletedButtonIDs]);
-//                    }
-                    if ($this->_saveModels($model, $modelImages)) {
+                    if (!empty($deletedButtonIDs)) {
+                        TelegramMessageButton::deleteAll([$pkey => $deletedButtonIDs]);
+                    }
+                    if ($this->_saveModels($model, $modelImages) && $this->_saveModels($model, $modelButtons)) {
                         $transaction->commit();
                         return $this->redirect(['view', 'id' => $model->id]);
                     }
                     $transaction->rollBack();
-
                 } catch (Exception $e) {
                     $transaction->rollBack();
                     Yii::error($e->getMessage());
@@ -176,34 +175,22 @@ final class TelegramMessageController extends AdminController
         return $this->render('update', [
             'modelMessage' => $model,
             'modelsImages' => (empty($modelImages)) ? [new TelegramMessageImage()] : $modelImages,
-//            'modelsButtons' => (empty($modelButtons)) ? [new TelegramMessageButton()] : $modelButtons,
+            'modelsButtons' => (empty($modelButtons)) ? [new TelegramMessageButton()] : $modelButtons,
         ]);
     }
 
     /**
-     * @param TelegramMessageImage[]     $modelsImages
-     * @param TelegramMessageButton[]     $modelsButtons
-
+     * * @param TelegramMessageButton[] | TelegramMessageImage[] $modelsItems
      */
-    private function _saveModels(TelegramMessage $model, array $modelsImages): bool
+    private function _saveModels(TelegramMessage $model, array $modelsItems): bool
     {
         if ($model->save(false)) {
-            foreach ($modelsImages as $modelImage) {
-                if (!empty($modelImage->image)) {
-                    $modelImage->telegram_message_id = $model->id;
-                    if (!$modelImage->save(false)) {
-                        return false;
-                    }
+            foreach ($modelsItems as $modelItem) {
+                $modelItem->telegram_message_id = $model->id;
+                if (!$modelItem->save(false)) {
+                    return false;
                 }
             }
-//            foreach ($modelsButtons as $modelButton) {
-//                if (!empty($modelButton->btn_name)) {
-//                    $modelButton->telegram_message_id = $model->id;
-//                    if (!$modelButton->save(false)) {
-//                        return false;
-//                    }
-//                }
-//            }
             return true;
         }
         return false;

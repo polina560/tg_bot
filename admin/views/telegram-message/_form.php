@@ -29,58 +29,128 @@ use yii\helpers\Url;
 
     <?= $form->field($modelMessage, 'key')->textInput(['maxlength' => true]) ?>
 
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <?php
+                DynamicFormWidget::begin([
+                    'widgetContainer' => 'image_dynamicform_wrapper',
+                    // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
+                    'widgetBody' => '.container-images',
+                    // required: css class selector
+                    'widgetItem' => '.image',
+                    // required: css class.
+                    'limit' => 20,
+                    // the maximum times, an element can be cloned (default 999)
+                    'min' => 0,
+                    // 0 or 1 (default 1)
+                    'insertButton' => '.add-image',
+                    // css class
+                    'deleteButton' => '.remove-image',
+                    // css class
+                    'model' => $modelsImages[0],
+                    'formId' => $form->id,
+                    'formFields' => [
+                        'image',
+                        'serial_number'
+                    ],
+                ]); ?>
+
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th><?= Yii::t('app', 'Images') ?></th>
+                        <th class="text-center" style="width: 90px;">
+                            <?= DynamicFormHelper::plusButton('add-image') ?>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody class="container-images">
+                    <?php
+                    foreach ($modelsImages as $i => $modelImage): ?>
+                        <tr class="image">
+                            <td class="-">
+                                <?php
+                                if (!$modelImage->isNewRecord) {
+                                    echo Html::activeHiddenInput($modelImage, "[$i]id");
+                                }
+                                ?>
+                                <?= $form->field($modelImage, "[$i]image")->widget(
+                                    CKFinderInputFile::class
+                                ) ?>
+                                <?= $form->field($modelImage, "[$i]serial_number")->textInput() ?>
+                            </td>
+                            <td class="text-center v-center" style="width: 90px; verti">
+                                <?= DynamicFormHelper::minusButton('remove-image') ?>
+                            </td>
+                        </tr>
+                    <?php
+                    endforeach; ?>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th></th>
+                        <th class="text-center" style="width: 90px;">
+                            <?= DynamicFormHelper::plusButton('add-image') ?>
+                        </th>
+                    </tr>
+                    </tfoot>
+                </table>
+                <?php
+                DynamicFormWidget::end(); ?>
+            </div>
+        </div>
+
+    <br>
     <div class="panel panel-default">
         <div class="panel-body">
             <?php
             DynamicFormWidget::begin([
-                'widgetContainer' => 'image_dynamicform_wrapper',
+                'widgetContainer' => 'button_dynamicform_wrapper',
                 // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
-                'widgetBody' => '.container-images',
+                'widgetBody' => '.container-buttons',
                 // required: css class selector
-                'widgetItem' => '.image',
+                'widgetItem' => '.button',
                 // required: css class.
                 'limit' => 20,
                 // the maximum times, an element can be cloned (default 999)
                 'min' => 0,
                 // 0 or 1 (default 1)
-                'insertButton' => '.add-image',
+                'insertButton' => '.add-button',
                 // css class
-                'deleteButton' => '.remove-image',
+                'deleteButton' => '.remove-button',
                 // css class
-                'model' => $modelsImages[0],
+                'model' => $modelsButtons[0],
                 'formId' => $form->id,
                 'formFields' => [
-                    'image',
-                    'serial_number'
+                    'text',
                 ],
             ]); ?>
 
             <table class="table table-bordered table-striped">
                 <thead>
                 <tr>
-                    <th><?= Yii::t('app', 'Images') ?></th>
+                    <th><?= Yii::t('app', 'Button') ?></th>
                     <th class="text-center" style="width: 90px;">
-                        <?= DynamicFormHelper::plusButton('add-image') ?>
+                        <?= DynamicFormHelper::plusButton('add-button') ?>
                     </th>
                 </tr>
                 </thead>
-                <tbody class="container-images">
+                <tbody class="container-buttons">
                 <?php
-                foreach ($modelsImages as $i => $modelImage): ?>
-                    <tr class="image">
+                foreach ($modelsButtons as $i => $modelButton): ?>
+                    <tr class="button">
                         <td class="-">
                             <?php
-                            if (!$modelImage->isNewRecord) {
-                                echo Html::activeHiddenInput($modelImage, "[$i]id");
+                            if (!$modelButton->isNewRecord) {
+                                echo Html::activeHiddenInput($modelButton, "[$i]id");
                             }
                             ?>
-                            <?= $form->field($modelImage, "[$i]image")->widget(
-                                CKFinderInputFile::class
-                            ) ?>
-                            <?= $form->field($modelImage, "[$i]serial_number")->textInput() ?>
+                            <?= $form->field($modelButton, "[$i]text")->textarea(); ?>
+                            <?= $form->field($modelButton, "[$i]btn_name")->textInput()        ; ?>
+                            <?= $form->field($modelButton, "[$i]serial_number")->textInput()        ; ?>
                         </td>
                         <td class="text-center v-center" style="width: 90px; verti">
-                            <?= DynamicFormHelper::minusButton('remove-image') ?>
+                            <?= DynamicFormHelper::minusButton('remove-button') ?>
                         </td>
                     </tr>
                 <?php
@@ -90,7 +160,7 @@ use yii\helpers\Url;
                 <tr>
                     <th></th>
                     <th class="text-center" style="width: 90px;">
-                        <?= DynamicFormHelper::plusButton('add-image') ?>
+                        <?= DynamicFormHelper::plusButton('add-button') ?>
                     </th>
                 </tr>
                 </tfoot>
@@ -99,80 +169,6 @@ use yii\helpers\Url;
             DynamicFormWidget::end(); ?>
         </div>
     </div>
-
-<!--    <br>-->
-<!--    <div class="panel panel-default">-->
-<!--        <div class="panel-body">-->
-<!--            --><?php
-//            DynamicFormWidget::begin([
-//                'widgetContainer' => 'button_dynamicform_wrapper',
-//                // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
-//                'widgetBody' => '.container-buttons',
-//                // required: css class selector
-//                'widgetItem' => '.button',
-//                // required: css class.
-//                'limit' => 20,
-//                // the maximum times, an element can be cloned (default 999)
-//                'min' => 0,
-//                // 0 or 1 (default 1)
-//                'insertButton' => '.add-button',
-//                // css class
-//                'deleteButton' => '.remove-button',
-//                // css class
-//                'model' => $modelsButtons[0],
-//                'formId' => $form->id,
-//                'formFields' => [
-//                    'btn_name',
-//                    'text',
-//                    'serial_number'
-//                ],
-//            ]); ?>
-<!---->
-<!--            <table class="table table-bordered table-striped">-->
-<!--                <thead>-->
-<!--                <tr>-->
-<!--                    <th>--><?php //= Yii::t('app', 'Buttons') ?><!--</th>-->
-<!--                    <th class="text-center" style="width: 90px;">-->
-<!--                        --><?php //= DynamicFormHelper::plusButton('add-button') ?>
-<!--                    </th>-->
-<!--                </tr>-->
-<!--                </thead>-->
-<!--                <tbody class="container-buttons">-->
-<!--                --><?php
-//                foreach ($modelsButtons as $i => $modelButton): ?>
-<!--                    <tr class="button">-->
-<!--                        <td class="-">-->
-<!--                            --><?php
-//                            if (!$modelButton->isNewRecord) {
-//                                echo Html::activeHiddenInput($modelButton, "[$i]id");
-//                            }
-//                            ?>
-<!--                            --><?php //= $form->field($modelButton, "[$i]btn_name")->textInput() ?>
-<!--                            --><?php //= $form->field($modelButton, "[$i]text")->widget(
-//                                \admin\widgets\ckeditor\EditorClassic::class
-//                            ) ?>
-<!--                            --><?php //= $form->field($modelButton, "[$i]serial_number")->textInput() ?>
-<!--                        </td>-->
-<!--                        <td class="text-center v-center" style="width: 90px; verti">-->
-<!--                            --><?php //= DynamicFormHelper::minusButton('remove-button') ?>
-<!--                        </td>-->
-<!--                    </tr>-->
-<!--                --><?php
-//                endforeach; ?>
-<!--                </tbody>-->
-<!--                <tfoot>-->
-<!--                <tr>-->
-<!--                    <th></th>-->
-<!--                    <th class="text-center" style="width: 90px;">-->
-<!--                        --><?php //= DynamicFormHelper::plusButton('add-button') ?>
-<!--                    </th>-->
-<!--                </tr>-->
-<!--                </tfoot>-->
-<!--            </table>-->
-<!--            --><?php
-//            DynamicFormWidget::end(); ?>
-<!--        </div>-->
-<!--    </div>-->
 
     <div class="form-group">
         <?php

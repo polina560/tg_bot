@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $this->render('_form', [
         'modelMessage' => $modelMessage,
         'modelsImages' => $modelsImages,
-//        'modelsButtons' => $modelsButtons,
+        'modelsButtons' => $modelsButtons,
         'isCreate' => true
     ]) ?>
 

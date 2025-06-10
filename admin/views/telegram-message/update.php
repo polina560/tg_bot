@@ -28,7 +28,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
     <?= $this->render('_form', [
         'modelMessage' => $modelMessage,
         'modelsImages' => $modelsImages,
-//        'modelsButtons' => $modelsButtons,
+        'modelsButtons' => $modelsButtons,
         'isCreate' => false
     ]) ?>
 
