@@ -6,7 +6,9 @@ use api\modules\telegram\TelegramBot;
 use Codeception\Exception\ModuleException;
 use common\components\exceptions\ModelSaveException;
 use common\models\DialogState;
+use common\models\TelegramButton;
 use common\models\TelegramMessage;
+use common\models\TelegramMessageButton;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\ServerResponse;
@@ -157,6 +159,7 @@ class CallbackqueryCommand extends SystemCommand
 
     protected function handleActionPlay($chat_id, $user_id, $message_id, int $number): ServerResponse
     {
+        //проверка на конец теста
         $dialog = DialogState::find()->where(['user_id' => $user_id])->one();
         if ($dialog->last_msg_id >= 5) {
             Request::deleteMessage([
@@ -169,121 +172,94 @@ class CallbackqueryCommand extends SystemCommand
             ]);
         }
 
-        $price = 0;
-        $remainder = 0;
-        switch ($number) {
-            case 1:
-                $price = 1; //TODO: цены в кнопках
-                if ($price <= $dialog->remainder) {
-                    $remainder = $dialog->remainder - 1;
-                    $dialog->ans_1 += 1;
-                } else {
-                    return Request::sendMessage([
-                        'chat_id' => $chat_id,
-                        'text' => 'нет монет'
-                    ]);
-                }
-                break;
-            case 2:
-                $price = 2; //TODO: цены в кнопках
-                if ($price <= $dialog->remainder) {
-                    $remainder = $dialog->remainder - 2;
-                    $dialog->ans_2 += 1;
-                } else {
-                    return Request::sendMessage([
-                        'chat_id' => $chat_id,
-                        'text' => 'нет монет'
-                    ]);
-                }
-                break;
-            case 3:
-                $price = 3; //TODO: цены в кнопках
-                if ($price <= $dialog->remainder) {
-                    $remainder = $dialog->remainder - 3;
-                    $dialog->ans_3 += 1;
-                } else {
-                    return Request::sendMessage([
-                        'chat_id' => $chat_id,
-                        'text' => 'нект монет'
-                    ]);
-                }
-                break;
-            case 4:
-                $price = 4; //TODO: цены в кнопках
-                if ($price <= $dialog->remainder) {
-                    $remainder = $dialog->remainder - 4;
-                    $dialog->ans_4 += 1;
-                } else {
-                    return Request::sendMessage([
-                        'chat_id' => $chat_id,
-                        'text' => 'нект монет'
-                    ]);
-                }
-                break;
-            case 5:
-                $price = 5; //TODO: цены в кнопках
-                if ($price <= $dialog->remainder) {
-                    $remainder = $dialog->remainder - 5;
-                    $dialog->ans_5 += 1;
-                } else {
-                    return Request::sendMessage([
-                        'chat_id' => $chat_id,
-                        'text' => 'нект монет'
-                    ]);
-                }
-                break;
-            default:
-                break;
+        //сообщения
+        $text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(['serial_number' => $dialog->last_msg_id + 1]
+        )->one();
+        //кнопки сообщения
+        $btn_query = TelegramButton::find()->where(['telegram_message_id' => $text->id]);
+        if (!$text || !$btn_query->one()) {
+            throw new \Exception('Сообщение не найдено');
         }
+
+        $button = $btn_query->where(['serial_number' => $number])->one();
+        $price = $button->value;
+        if ($price <= $dialog->remainder) {
+            $remainder = $dialog->remainder - $price;
+            switch ($number) {
+                case 1:
+                    $dialog->ans_1 += 1;
+                    break;
+                case 2:
+                    $dialog->ans_2 += 1;
+                    break;
+                case 3:
+                    $dialog->ans_3 += 1;
+                    break;
+                case 4:
+                    $dialog->ans_4 += 1;
+                    break;
+                case 5:
+                    $dialog->ans_5 += 1;
+                    break;
+                default:
+                    break;
+            }
+            $dialog->remainder = $remainder;
+            $dialog->last_msg_id += 1;
+            $dialog->last_msg_time = time();
+            if (!$dialog->save()) {
+                throw new ModelSaveException($dialog);
+            }
+        } else {
+            return Request::sendMessage([
+                'chat_id' => $chat_id,
+                'text' => 'нет монет'
+            ]);
+        }
+
 
         Request::deleteMessage([
             'chat_id' => $chat_id,
             'message_id' => $message_id
         ]);
 
-        $text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(['serial_number' => $dialog->last_msg_id+1]
-        )->one();
-        if ($text) {
-            if ($media_group = TelegramBot::imageToArray($text, $price, $remainder)) {
-                $mediaResponse = Request::sendMediaGroup([
-                    'chat_id' => $chat_id,
-                    'media' => $media_group
-                ]);
-            } else {
-                $mediaResponse = Request::sendMessage([
-                    'chat_id' => $chat_id,
-                    'text' => sprintf($text->text, $price, $remainder)
-                ]);
-            }
+
+        if ($media_group = TelegramBot::imageToArray($text, $price, $remainder)) {
+           Request::sendMediaGroup([
+                'chat_id' => $chat_id,
+                'media' => $media_group
+            ]);
+        } else {
+            Request::sendMessage([
+                'chat_id' => $chat_id,
+                'text' => sprintf($text->text, $price, $remainder)
+            ]);
         }
 
-        $dialog->remainder = $remainder;
-        $dialog->last_msg_id += 1;
-        $dialog->last_msg_time = time();
-        if (!$dialog->save()) {
-            throw new ModelSaveException($dialog);
-        }
 
-        $inline_keyboard = new InlineKeyboard([
+//        $inline_keyboard = new InlineKeyboard([
+//            ['text' => '1', 'callback_data' => 'play_1'],
+//            ['text' => '2', 'callback_data' => 'play_2'],
+//            ['text' => '3', 'callback_data' => 'play_3'],
+//            ['text' => '4', 'callback_data' => 'play_4'],
+//            ['text' => '5', 'callback_data' => 'play_5'],
+//        ]);
+
+        return Request::sendMessage([
+            'chat_id' => $chat_id,
+            'text' => 'Выберите любой вариант' . '(' . $number . ')',
+            'reply_markup' => self::keyboard()
+        ]);
+    }
+
+    static function keyboard()
+    {
+        return new InlineKeyboard([
             ['text' => '1', 'callback_data' => 'play_1'],
             ['text' => '2', 'callback_data' => 'play_2'],
             ['text' => '3', 'callback_data' => 'play_3'],
             ['text' => '4', 'callback_data' => 'play_4'],
             ['text' => '5', 'callback_data' => 'play_5'],
         ]);
-
-        $messageResponse = Request::sendMessage([
-            'chat_id' => $chat_id,
-            'text' => 'Выберите любой вариант' . '(' . $number . ')',
-            'reply_markup' => $inline_keyboard
-        ]);
-
-        // 4. Отвечаем на callback запрос
-//        Request::answerCallbackQuery([
-//            'text' => 'Ответ принят',
-//            'show_alert' => true,
-//        ]);
-
-        return $messageResponse;
     }
 }

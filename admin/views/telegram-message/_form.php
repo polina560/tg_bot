@@ -123,6 +123,9 @@ use yii\helpers\Url;
                 'formId' => $form->id,
                 'formFields' => [
                     'text',
+                    'btn_name',
+                    'serial_number',
+                    'value'
                 ],
             ]); ?>
 
@@ -147,6 +150,7 @@ use yii\helpers\Url;
                             ?>
                             <?= $form->field($modelButton, "[$i]text")->textarea(); ?>
                             <?= $form->field($modelButton, "[$i]btn_name")->textInput()        ; ?>
+                            <?= $form->field($modelButton, "[$i]value")->textInput()        ; ?>
                             <?= $form->field($modelButton, "[$i]serial_number")->textInput()        ; ?>
                         </td>
                         <td class="text-center v-center" style="width: 90px; verti">

@@ -19,7 +19,7 @@ class TelegramBot extends Module
      * @param TelegramMessage        $text
      * @param TelegramMessageImage[] $images
      */
-    static public function imageToArray(TelegramMessage $text, int $price = 0, int $reminder = 0)
+    static public function imageToArray(array $text, int $price = 0, int $reminder = 0)
     {
         if ($images = TelegramMessageImage::find()->where(['telegram_message_id' => $text->id])->all()) {
             foreach ($images as $index => $image) {
