@@ -65,30 +65,7 @@ class CallbackqueryCommand extends SystemCommand
                 throw new \Exception('Сообщение не найдено');
             }
 
-            $media_group = TelegramBot::imageToArray($text);
-            $mediaResponse = Request::sendMediaGroup([
-                'chat_id' => $chat_id,
-                'media' => $media_group
-            ]);
-
-            if (!$mediaResponse->isOk()) {
-                file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message.txt', print_r($media_group, true));
-                throw new \Exception('Ошибка отправки медиа: ' . $mediaResponse->getDescription());
-            }
-
-            $inline_keyboard = new InlineKeyboard([
-                ['text' => '1', 'callback_data' => 'play_1'],
-                ['text' => '2', 'callback_data' => 'play_2'],
-                ['text' => '3', 'callback_data' => 'play_3'],
-                ['text' => '4', 'callback_data' => 'play_4'],
-                ['text' => '5', 'callback_data' => 'play_5'],
-            ]);
-
-            $messageResponse = Request::sendMessage([
-                'chat_id' => $chat_id,
-                'text' => 'Выберите любой вариант',
-                'reply_markup' => $inline_keyboard
-            ]);
+            $messageResponse = $this->sendTestMessage($text, $chat_id);
 
             $dialog = DialogState::find()->where(['user_id' => $user_id])->one();
             if (!empty($dialog)) {
@@ -224,13 +201,13 @@ class CallbackqueryCommand extends SystemCommand
 
 
         //сообщения
-        $text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(['serial_number' => $dialog->last_msg_id + 1]
+        $text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(['serial_number' => $dialog->last_msg_id]
         )->one();
         if (!$text) {
             throw new \Exception('Сообщение не найдено');
         }
         if ($media_group = TelegramBot::imageToArray($text, $price, $remainder)) {
-           Request::sendMediaGroup([
+            Request::sendMediaGroup([
                 'chat_id' => $chat_id,
                 'media' => $media_group
             ]);
@@ -243,8 +220,36 @@ class CallbackqueryCommand extends SystemCommand
 
         return Request::sendMessage([
             'chat_id' => $chat_id,
-            'text' => 'Выберите любой вариант' . '(' . $number . ')',
+            'text' => 'Выберите любой вариант' . '(' . $dialog->last_msg_id . ')',
             'reply_markup' => self::keyboard()
+        ]);
+    }
+
+    protected function sendTestMessage($text, $chat_id)
+    {
+        $media_group = TelegramBot::imageToArray($text);
+        $mediaResponse = Request::sendMediaGroup([
+            'chat_id' => $chat_id,
+            'media' => $media_group
+        ]);
+
+        if (!$mediaResponse->isOk()) {
+            file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message.txt', print_r($media_group, true));
+            throw new \Exception('Ошибка отправки медиа: ' . $mediaResponse->getDescription());
+        }
+
+        $inline_keyboard = new InlineKeyboard([
+            ['text' => '1', 'callback_data' => 'play_1'],
+            ['text' => '2', 'callback_data' => 'play_2'],
+            ['text' => '3', 'callback_data' => 'play_3'],
+            ['text' => '4', 'callback_data' => 'play_4'],
+            ['text' => '5', 'callback_data' => 'play_5'],
+        ]);
+
+        return Request::sendMessage([
+            'chat_id' => $chat_id,
+            'text' => 'Выберите любой вариант',
+            'reply_markup' => $inline_keyboard
         ]);
     }
 
