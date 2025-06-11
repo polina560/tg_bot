@@ -173,11 +173,11 @@ class CallbackqueryCommand extends SystemCommand
         }
 
         //сообщения
-        $text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(['serial_number' => $dialog->last_msg_id + 1]
+        $last_text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(['serial_number' => $dialog->last_msg_id]
         )->one();
         //кнопки сообщения
-        $button = TelegramMessageButton::find()->andWhere(['telegram_message_id' => $text->id])->andWhere(['serial_number' => $number])->one();
-        if (!$text || !$button) {
+        $button = TelegramMessageButton::find()->where(['telegram_message_id' => $last_text->id])->andWhere(['serial_number' => $number])->one();
+        if (!$button) {
             throw new \Exception('Сообщение не найдено');
         }
 
@@ -223,6 +223,12 @@ class CallbackqueryCommand extends SystemCommand
         ]);
 
 
+        //сообщения
+        $text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(['serial_number' => $dialog->last_msg_id + 1]
+        )->one();
+        if (!$text) {
+            throw new \Exception('Сообщение не найдено');
+        }
         if ($media_group = TelegramBot::imageToArray($text, $price, $remainder)) {
            Request::sendMediaGroup([
                 'chat_id' => $chat_id,
@@ -234,15 +240,6 @@ class CallbackqueryCommand extends SystemCommand
                 'text' => sprintf($text->text, $price, $remainder)
             ]);
         }
-
-
-//        $inline_keyboard = new InlineKeyboard([
-//            ['text' => '1', 'callback_data' => 'play_1'],
-//            ['text' => '2', 'callback_data' => 'play_2'],
-//            ['text' => '3', 'callback_data' => 'play_3'],
-//            ['text' => '4', 'callback_data' => 'play_4'],
-//            ['text' => '5', 'callback_data' => 'play_5'],
-//        ]);
 
         return Request::sendMessage([
             'chat_id' => $chat_id,
