@@ -138,16 +138,6 @@ class CallbackqueryCommand extends SystemCommand
     {
         //проверка на конец теста
         $dialog = DialogState::find()->where(['user_id' => $user_id])->one();
-        if ($dialog->last_msg_id >= 5) {
-            Request::deleteMessage([
-                'chat_id' => $chat_id,
-                'message_id' => $message_id
-            ]);
-            return Request::sendMessage([
-                'chat_id' => $chat_id,
-                'text' => 'конец'
-            ]);
-        }
 
         //обработка нажатия на кнопку
         $last_text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(['serial_number' => $dialog->last_msg_id]
@@ -199,6 +189,10 @@ class CallbackqueryCommand extends SystemCommand
         ]);
 
 
+        if ($dialog->last_msg_id > 5) {
+            return $this->sendEndTestMessage($user_id, $chat_id, $dialog);
+        }
+
         //отправка нового сообщения
         $text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(['serial_number' => $dialog->last_msg_id]
         )->one();
@@ -228,6 +222,33 @@ class CallbackqueryCommand extends SystemCommand
             'text' => 'Выберите любой вариант',
             'reply_markup' => self::keyboard()
         ]);
+
+    }
+
+    protected function sendEndTestMessage($user_id, $chat_id, DialogState $dialog)
+    {
+        $array = [$dialog->ans_1, $dialog->ans_2, $dialog->ans_3, $dialog->ans_4, $dialog->ans_5];
+        $max = max($array);
+        $indexes = array_keys($max, $array);
+
+        if (!is_array($indexes)) {
+            $text = TelegramMessage::find()->where(['key' => '/res'])->andWhere(['serial_number' => $indexes])->one();
+        } else {
+            $text = TelegramMessage::find()->where(['key' => '/res'])->andWhere(['IN', 'serial_number', $indexes])->orderBy(new Expression('rand()'))
+                ->limit(1)->one();
+        }
+
+        if ($media_group = TelegramBot::imageToArray($text)) {
+            return Request::sendMediaGroup([
+                'chat_id' => $chat_id,
+                'media' => $media_group
+            ]);
+        } else {
+            return Request::sendMessage([
+                'chat_id' => $chat_id,
+                'text' => $text->text
+            ]);
+        }
 
     }
 
