@@ -14,6 +14,7 @@ use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
 use Yii;
+use yii\db\Expression;
 
 class CallbackqueryCommand extends SystemCommand
 {
@@ -190,7 +191,7 @@ class CallbackqueryCommand extends SystemCommand
 
 
         if ($dialog->last_msg_id > 5) {
-            return $this->sendEndTestMessage($user_id, $chat_id, $dialog);
+            return $this->sendEndTestMessage($chat_id, $dialog);
         }
 
         //отправка нового сообщения
@@ -225,11 +226,12 @@ class CallbackqueryCommand extends SystemCommand
 
     }
 
-    protected function sendEndTestMessage($user_id, $chat_id, DialogState $dialog)
+    protected function sendEndTestMessage($chat_id, DialogState $dialog)
     {
-        $array = [$dialog->ans_1, $dialog->ans_2, $dialog->ans_3, $dialog->ans_4, $dialog->ans_5];
+        $array = array($dialog->ans_1, $dialog->ans_2, $dialog->ans_3, $dialog->ans_4, $dialog->ans_5);
         $max = max($array);
-        $indexes = array_keys($max, $array);
+        $indexes = array_keys($array, $max);
+
 
         if (!is_array($indexes)) {
             $text = TelegramMessage::find()->where(['key' => '/res'])->andWhere(['serial_number' => $indexes])->one();
