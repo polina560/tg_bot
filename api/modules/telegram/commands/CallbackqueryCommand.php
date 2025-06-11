@@ -149,10 +149,9 @@ class CallbackqueryCommand extends SystemCommand
             ]);
         }
 
-        //сообщения
+        //обработка нажатия на кнопку
         $last_text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(['serial_number' => $dialog->last_msg_id]
         )->one();
-        //кнопки сообщения
         $button = TelegramMessageButton::find()->where(['telegram_message_id' => $last_text->id])->andWhere(['serial_number' => $number])->one();
         if (!$button) {
             throw new \Exception('Сообщение не найдено');
@@ -200,12 +199,18 @@ class CallbackqueryCommand extends SystemCommand
         ]);
 
 
-        //сообщения
+        //отправка нового сообщения
         $text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(['serial_number' => $dialog->last_msg_id]
         )->one();
         if (!$text) {
             throw new \Exception('Сообщение не найдено');
         }
+
+        return $this->sendTestMessage($text, $chat_id, $price, $remainder);
+    }
+
+    protected function sendTestMessage($text, $chat_id, $price = 0, $remainder = 0)
+    {
         if ($media_group = TelegramBot::imageToArray($text, $price, $remainder)) {
             Request::sendMediaGroup([
                 'chat_id' => $chat_id,
@@ -220,37 +225,10 @@ class CallbackqueryCommand extends SystemCommand
 
         return Request::sendMessage([
             'chat_id' => $chat_id,
-            'text' => 'Выберите любой вариант' . '(' . $dialog->last_msg_id . ')',
+            'text' => 'Выберите любой вариант',
             'reply_markup' => self::keyboard()
         ]);
-    }
 
-    protected function sendTestMessage($text, $chat_id)
-    {
-        $media_group = TelegramBot::imageToArray($text);
-        $mediaResponse = Request::sendMediaGroup([
-            'chat_id' => $chat_id,
-            'media' => $media_group
-        ]);
-
-        if (!$mediaResponse->isOk()) {
-            file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message.txt', print_r($media_group, true));
-            throw new \Exception('Ошибка отправки медиа: ' . $mediaResponse->getDescription());
-        }
-
-        $inline_keyboard = new InlineKeyboard([
-            ['text' => '1', 'callback_data' => 'play_1'],
-            ['text' => '2', 'callback_data' => 'play_2'],
-            ['text' => '3', 'callback_data' => 'play_3'],
-            ['text' => '4', 'callback_data' => 'play_4'],
-            ['text' => '5', 'callback_data' => 'play_5'],
-        ]);
-
-        return Request::sendMessage([
-            'chat_id' => $chat_id,
-            'text' => 'Выберите любой вариант',
-            'reply_markup' => $inline_keyboard
-        ]);
     }
 
     static function keyboard()
