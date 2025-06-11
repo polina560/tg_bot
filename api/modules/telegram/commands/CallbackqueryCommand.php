@@ -176,12 +176,11 @@ class CallbackqueryCommand extends SystemCommand
         $text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(['serial_number' => $dialog->last_msg_id + 1]
         )->one();
         //кнопки сообщения
-        $btn_query = TelegramButton::find()->where(['telegram_message_id' => $text->id]);
-        if (!$text || !$btn_query->one()) {
+        $button = TelegramMessageButton::find()->andWhere(['telegram_message_id' => $text->id])->andWhere(['serial_number' => $number])->one();
+        if (!$text || !$button) {
             throw new \Exception('Сообщение не найдено');
         }
 
-        $button = $btn_query->where(['serial_number' => $number])->one();
         $price = $button->value;
         if ($price <= $dialog->remainder) {
             $remainder = $dialog->remainder - $price;
