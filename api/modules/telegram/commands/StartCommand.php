@@ -33,33 +33,12 @@ class StartCommand extends UserCommand
         $chat_id = $message->getFrom()->getId();
         $user_id = $message->getFrom()->getId();
 
-        $member = Request::getChatMember(['chat_id' => $chat_id, 'user_id' => $user_id])->toJson();
+        $member = Request::getChatMember(['chat_id' => Yii::$app->environment->CHAT_ID, 'user_id' => $user_id])->toJson();
         $member = json_decode($member, true);
         $status = $member['result']['status'];
         $member_statuses = ['creator', 'administrator', 'member'];
 
-        file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message.txt', print_r($status, true));
-
-//        try {
-//            $dialog = DialogState::find()->where(['user_id' => $user_id])->one();
-//            if (!empty($dialog)) {
-//                $dialog->delete();
-//            }
-//            $dialog = new DialogState();
-//            $dialog->user_id = $user_id;
-//            $dialog->chat_id = $chat_id;
-//            $dialog->last_msg_time = time();
-//            $dialog->last_msg_id = 0;
-//
-//            if (!$dialog->save()) {
-//                file_put_contents(
-//                    Yii::getAlias('@htdocs/uploads') . '/message.txt',
-//                    print_r(new ModelSaveException($dialog), true)
-//                );
-//                new ModelSaveException($dialog);
-//            }
-//        } catch (\Exception $e) {
-////        }
+        file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message.txt', print_r($member, true));
 
 
         //проверка подписки на канал

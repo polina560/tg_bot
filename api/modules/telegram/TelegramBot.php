@@ -21,7 +21,7 @@ class TelegramBot extends Module
      */
     static public function imageToArray(TelegramMessage $text, int $price = 0, int $reminder = 0)
     {
-        if ($images = TelegramMessageImage::find()->where(['telegram_message_id' => $text->id])->all()) {
+        if ($images = TelegramMessageImage::find()->where(['telegram_message_id' => $text->id])->orderBy('serial_number')->all()) {
             foreach ($images as $index => $image) {
                 if ($index == 0) {
                     $media_group[] = new InputMediaPhoto(

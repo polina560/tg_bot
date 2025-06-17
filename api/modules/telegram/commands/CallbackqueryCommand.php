@@ -112,7 +112,7 @@ class CallbackqueryCommand extends SystemCommand
 
     protected function handleActionIsMember($chat_id, $user_id): ServerResponse
     {
-        $member = Request::getChatMember(['chat_id' => $chat_id, 'user_id' => $user_id])->toJson();
+        $member = Request::getChatMember(['chat_id' => Yii::$app->environment->CHAT_ID, 'user_id' => $user_id])->toJson();
         $member = json_decode($member, true);
         $status = $member['result']['status'];
         $member_statuses = ['creator', 'administrator', 'member'];
@@ -141,9 +141,12 @@ class CallbackqueryCommand extends SystemCommand
         $dialog = DialogState::find()->where(['user_id' => $user_id])->one();
 
         //обработка нажатия на кнопку
-        $last_text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(['serial_number' => $dialog->last_msg_id]
+        $last_text = TelegramMessage::find()->where(['key' => 'play'])->andWhere(
+            ['serial_number' => $dialog->last_msg_id]
         )->one();
-        $button = TelegramMessageButton::find()->where(['telegram_message_id' => $last_text->id])->andWhere(['serial_number' => $number])->one();
+        $button = TelegramMessageButton::find()->where(['telegram_message_id' => $last_text->id])->andWhere(
+            ['serial_number' => $number]
+        )->one();
         if (!$button) {
             throw new \Exception('Сообщение не найдено');
         }
@@ -223,7 +226,6 @@ class CallbackqueryCommand extends SystemCommand
             'text' => 'Выберите любой вариант',
             'reply_markup' => self::keyboard()
         ]);
-
     }
 
     protected function sendEndTestMessage($chat_id, DialogState $dialog)
@@ -231,24 +233,48 @@ class CallbackqueryCommand extends SystemCommand
         $array = array($dialog->ans_1, $dialog->ans_2, $dialog->ans_3, $dialog->ans_4, $dialog->ans_5);
         $max = max($array);
         $indexes = array_keys($array, $max);
+        foreach ($indexes as $index)
+            $serial_numbers[] = ++$index;
 
 
-        if (!is_array($indexes)) {
-            $text = TelegramMessage::find()->where(['key' => '/res'])->andWhere(['serial_number' => $indexes])->one();
-        } else {
-            $text = TelegramMessage::find()->where(['key' => '/res'])->andWhere(['IN', 'serial_number', $indexes])->orderBy(new Expression('rand()'))
-                ->limit(1)->one();
-        }
+        $text = TelegramMessage::find()->where(['key' => '/res'])->andWhere(['IN', 'serial_number', $serial_numbers])->orderBy(
+            new Expression('rand()')
+        )
+            ->limit(1)->one();
+
+        $keyboard = array(
+            "resize_keyboard" => true,
+            "inline_keyboard" => array(
+                array(
+                    array(
+                        'text' => 'Поделиться',
+                        'switch_inline_query' => 'telegram bot',
+                    ),
+                ),
+                array(
+                    array(
+                        'text' => 'Получить монеты!',
+                        'callback_data' => 'get-money'
+                    ),
+                ),
+            ),
+        );
 
         if ($media_group = TelegramBot::imageToArray($text)) {
-            return Request::sendMediaGroup([
+            Request::sendMediaGroup([
                 'chat_id' => $chat_id,
                 'media' => $media_group
+            ]);
+            return Request::sendMessage([
+                'chat_id' => $chat_id,
+                'text' => 'Поделиться',
+                'reply_markup' => $keyboard
             ]);
         } else {
             return Request::sendMessage([
                 'chat_id' => $chat_id,
-                'text' => $text->text
+                'text' => $text->text,
+                'reply_markup' => $keyboard
             ]);
         }
 
