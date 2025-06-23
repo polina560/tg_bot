@@ -4,19 +4,12 @@ namespace api\modules\telegram\commands;
 
 use api\modules\telegram\TelegramBot;
 use common\components\exceptions\ModelSaveException;
-use common\models\DialogState;
 use common\models\TelegramMessage;
-use common\models\TelegramMessageButton;
-use common\models\TelegramMessageImage;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\InlineKeyboard;
-use Longman\TelegramBot\Entities\InputMedia\InputMediaPhoto;
-use Longman\TelegramBot\Entities\InputMessageContent\InputTextMessageContent;
+use Longman\TelegramBot\Exception\TelegramException;
 use Longman\TelegramBot\Request;
-use PhpTelegramBot\FluentKeyboard\InlineKeyboard\InlineKeyboardButton;
-use PhpTelegramBot\FluentKeyboard\InlineKeyboard\InlineKeyboardMarkup;
-use PhpTelegramBot\FluentKeyboard\ReplyKeyboard\KeyboardButton;
-use PhpTelegramBot\FluentKeyboard\ReplyKeyboard\ReplyKeyboardMarkup;
+
 use Yii;
 
 class StartCommand extends UserCommand
@@ -27,6 +20,10 @@ class StartCommand extends UserCommand
     protected $usage = '/start';
     protected $version = '1.0.0';
 
+    /**
+     * @throws ModelSaveException
+     * @throws TelegramException
+     */
     public function execute(): \Longman\TelegramBot\Entities\ServerResponse
     {
         $message = $this->getMessage();
@@ -38,8 +35,11 @@ class StartCommand extends UserCommand
         $status = $member['result']['status'];
         $member_statuses = ['creator', 'administrator', 'member'];
 
-        file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message.txt', print_r($member, true));
+        file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message_p
+        .txt', print_r($member, true));
 
+        // запись в бд о новом диалоге
+        TelegramBot::updateLastMessageTime($user_id, $chat_id);
 
         //проверка подписки на канал
         if (!in_array($status, $member_statuses)) {

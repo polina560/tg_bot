@@ -2,7 +2,10 @@
 
 namespace console\controllers;
 
+use api\modules\telegram\TelegramBot;
+use common\components\exceptions\ModelSaveException;
 use common\modules\backup\models\DbWrap;
+use Longman\TelegramBot\Exception\TelegramException;
 use Yii;
 use yii\base\Exception;
 use yii\console\ExitCode;
@@ -62,6 +65,16 @@ final class DaemonController extends ConsoleController
     public function actionBackup(): int
     {
         DbWrap::exportDB();
+        return ExitCode::OK;
+    }
+
+    /**
+     * @throws ModelSaveException
+     * @throws TelegramException
+     */
+    public function actionSendNotification(): int
+    {
+        TelegramBot::sendNotification();
         return ExitCode::OK;
     }
 }

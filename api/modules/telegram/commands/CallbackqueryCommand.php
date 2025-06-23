@@ -12,6 +12,7 @@ use common\models\TelegramMessageButton;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\ServerResponse;
+use Longman\TelegramBot\Exception\TelegramException;
 use Longman\TelegramBot\Request;
 use Yii;
 use yii\db\Expression;
@@ -23,6 +24,9 @@ class CallbackqueryCommand extends SystemCommand
     protected $description = 'Handle the callback query';
     protected $version = '1.0.0';
 
+    /**
+     * @throws ModelSaveException
+     */
     public function execute(): ServerResponse
     {
         $callback_query = $this->getCallbackQuery();
@@ -30,6 +34,8 @@ class CallbackqueryCommand extends SystemCommand
         $user_id = $callback_query->getFrom()->getId();
         $chat_id = $callback_query->getMessage()->getChat()->getId();
         $message_id = $callback_query->getMessage()->getMessageId();
+
+        TelegramBot::updateLastMessageTime($user_id, $chat_id);
 
         switch ($callback_data) {
             case 'get-money':
@@ -69,14 +75,12 @@ class CallbackqueryCommand extends SystemCommand
             $messageResponse = $this->sendTestMessage($text, $chat_id);
 
             $dialog = DialogState::find()->where(['user_id' => $user_id])->one();
-            if (!empty($dialog)) {
-                $dialog->delete();
-            }
-            $dialog = new DialogState();
-            $dialog->user_id = $user_id;
-            $dialog->chat_id = $chat_id;
-            $dialog->last_msg_time = time();
             $dialog->last_msg_id = 1;
+            $dialog->ans_1 = 0;
+            $dialog->ans_2 = 0;
+            $dialog->ans_3 = 0;
+            $dialog->ans_4 = 0;
+            $dialog->ans_5 = 0;
             $dialog->remainder = 5000; //TODO: занести значения в БД
 
             if (!$dialog->save()) {
@@ -110,6 +114,10 @@ class CallbackqueryCommand extends SystemCommand
         }
     }
 
+    /**
+     * @throws ModelSaveException
+     * @throws TelegramException
+     */
     protected function handleActionIsMember($chat_id, $user_id): ServerResponse
     {
         $member = Request::getChatMember(['chat_id' => Yii::$app->environment->CHAT_ID, 'user_id' => $user_id])->toJson();
@@ -175,7 +183,6 @@ class CallbackqueryCommand extends SystemCommand
             }
             $dialog->remainder = $remainder;
             $dialog->last_msg_id += 1;
-            $dialog->last_msg_time = time();
             if (!$dialog->save()) {
                 throw new ModelSaveException($dialog);
             }

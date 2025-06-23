@@ -33,7 +33,7 @@ class BotController extends Controller
                 $commands = [
                     ['command' => 'start', 'description' => 'Запуск бота'],
                     ['command' => 'info', 'description' => 'Информация о боте'],
-                    ['command' => 'share', 'description' => 'Поелиться'],
+                    ['command' => 'share', 'description' => 'Поделиться'],
                 ];
 
                 $commandResult = Request::setMyCommands([
