@@ -172,6 +172,16 @@ return [
     'Count' => 'Кол-во',
     'Date' => 'Дата',
 
+    'Telegram Messages' => 'Текст сообщений',
+    'Create Telegram Message' => 'Добавить',
+    'Telegram Images' => 'Изображения',
+    'Create Telegram Image' => 'Добавить',
+    'Image' => 'Изображение',
+    'Serial Number' => 'Порядковый номер',
+    'Btn Name' => 'Название кнопки',
+    'Button' => 'Кнопки',
+
+
     // Two-factor authentication
     'Scan the following QR code using a TOTP compatible app, like Google Authenticator or Authy.' => 'Сканируйте следующий QR-код с помощью приложения, совместимого с TOTP, такого как Google Authenticator или Authy.',
     'Or you can also enter the secret manually:' => 'Или вы также можете ввести секрет вручную:',

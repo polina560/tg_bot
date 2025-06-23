@@ -59,7 +59,7 @@ class TelegramBot extends Module
             if ($dialog->last_msg_time < time() - 60 && $dialog->quantity_reminder_msg == 0) {
                 $result = Request::sendMessage([
                     'chat_id' => $dialog->chat_id,
-                    'text' => 'Анекдот: Буратино дрочил и сгорел',
+                    'text' => TelegramMessage::find()->where(['key' => '/notification'])->andWhere(['serial_number' => 1])->one()->text,
                 ]);
                 $dialog->quantity_reminder_msg++;
                 $dialog->last_msg_time = time();
@@ -74,11 +74,7 @@ class TelegramBot extends Module
                 $result =
                     Request::sendMessage([
                         'chat_id' => $dialog->chat_id,
-                        'text' => 'Вопрос:
-- Какая разница между пустым портсигаром и сиротой?
-Ответ:
-- Пустой портсигар без папирос, а сирота и без папи рос
-и без мами рос.',
+                        'text' => TelegramMessage::find()->where(['key' => '/notification'])->andWhere(['serial_number' => 2])->one()->text,
                     ]);
                 $dialog->quantity_reminder_msg++;
                 $dialog->last_msg_time = time();
@@ -92,7 +88,7 @@ class TelegramBot extends Module
             if ($dialog->last_msg_time < time() - 5 * 60 && $dialog->quantity_reminder_msg == 2) {
                 $result = Request::sendMessage([
                     'chat_id' => $dialog->chat_id,
-                    'text' => 'Попадают как то в Ад Борис Ельцин, Курт Кобейн и Боря Моисеев...',
+                    'text' => TelegramMessage::find()->where(['key' => '/notification'])->andWhere(['serial_number' => 3])->one()->text,
                 ]);
                 $dialog->quantity_reminder_msg++;
                 $dialog->last_msg_time = time();
@@ -104,11 +100,15 @@ class TelegramBot extends Module
         }
     }
 
-    static function updateLastMessageTime($user_id, $chat_id): DialogState
+    static function updateLastMessageTime($user_id, $chat_id): string
     {
         if ($dialog = DialogState::findOne(['user_id' => $user_id])) {
             $dialog->last_msg_time = time();
             $dialog->quantity_reminder_msg = 0;
+            if (!$dialog->save()) {
+                throw new ModelSaveException($dialog);
+            }
+            return 'update';
         } else {
             $dialog = new DialogState();
             $dialog->user_id = $user_id;
@@ -116,12 +116,10 @@ class TelegramBot extends Module
             $dialog->last_msg_time = time();
             $dialog->last_msg_id = 1;
             $dialog->remainder = 5000; //TODO: занести значения в БД
+            if (!$dialog->save()) {
+                throw new ModelSaveException($dialog);
+            }
+            return 'new';
         }
-
-        if (!$dialog->save()) {
-            throw new ModelSaveException($dialog);
-        }
-
-        return $dialog;
     }
 }

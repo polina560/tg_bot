@@ -17,7 +17,7 @@ use yii\helpers\Url;
 
     <?php $form = AppActiveForm::begin() ?>
 
-    <?= $form->field($model, 'image')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'image')->widget(\admin\widgets\ckfinder\CKFinderInputFile::class) ?>
 
     <?= $form->field($model, 'key')->textInput(['maxlength' => true]) ?>
 

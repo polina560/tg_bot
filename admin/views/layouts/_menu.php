@@ -55,10 +55,6 @@ if (!Yii::$app->user->isGuest) {
                     'label' => Yii::t('app', 'Telegram Images'),
                     'url' => UserUrl::setFilters(TelegramImageSearch::class, ['/telegram-image/index'])
                 ],
-                [
-                    'label' => Yii::t('app', 'Telegram Buttons'),
-                    'url' => UserUrl::setFilters(TelegramButtonSearch::class, ['/telegram-button/index'])
-                ],
             ]
         ],
         ['label' => Icon::show('chart-bar') . 'Статистика', 'url' => ['/statistic/index']],

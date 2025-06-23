@@ -35,7 +35,11 @@ class CallbackqueryCommand extends SystemCommand
         $chat_id = $callback_query->getMessage()->getChat()->getId();
         $message_id = $callback_query->getMessage()->getMessageId();
 
-        TelegramBot::updateLastMessageTime($user_id, $chat_id);
+        $dialog = TelegramBot::updateLastMessageTime($user_id, $chat_id);
+        if($dialog == 'new' && $callback_data != 'is-member'){
+            return $this->handleAnswerGetMoney($chat_id, $user_id);
+        }
+
 
         switch ($callback_data) {
             case 'get-money':
