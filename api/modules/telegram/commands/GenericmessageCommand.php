@@ -4,6 +4,7 @@ namespace api\modules\telegram\commands;
 
 use api\modules\telegram\TelegramBot;
 use common\components\exceptions\ModelSaveException;
+use common\models\TelegramMessage;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Exception\TelegramException;
 
@@ -25,8 +26,8 @@ class GenericmessageCommand extends UserCommand
 
         TelegramBot::updateLastMessageTime($user_id, $chat_id);
 
-        $text = $message->getText();
+        $text = TelegramMessage::findOne(['key' => 'default'])->text;
 
-        return $this->replyToChat("Вы написали: $text");
+        return $this->replyToChat($text);
     }
 }

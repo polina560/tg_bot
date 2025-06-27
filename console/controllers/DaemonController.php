@@ -3,7 +3,6 @@
 namespace console\controllers;
 
 use api\modules\telegram\TelegramBot;
-use common\components\exceptions\ModelSaveException;
 use common\modules\backup\models\DbWrap;
 use Longman\TelegramBot\Exception\TelegramException;
 use Yii;
@@ -69,12 +68,21 @@ final class DaemonController extends ConsoleController
     }
 
     /**
-     * @throws ModelSaveException
      * @throws TelegramException
      */
     public function actionSendNotification(): int
     {
         TelegramBot::sendNotification();
+        TelegramBot::checkUserBlocked();
+        return ExitCode::OK;
+    }
+
+    /**
+     * @throws TelegramException
+     */
+    public function actionCheckUserBlocked(): int
+    {
+        TelegramBot::checkUserBlocked();
         return ExitCode::OK;
     }
 }

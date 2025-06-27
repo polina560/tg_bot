@@ -21,7 +21,7 @@ class TelegramBot extends Module
     public $controllerNamespace = 'api\modules\telegram\controllers';
 
     /**
-     * @param TelegramMessage        $text
+     * @param TelegramMessage $text
      * @param TelegramMessageImage[] $images
      */
     static public function imageToArray(TelegramMessage $text, int $price = 0, int $reminder = 0)
@@ -59,7 +59,9 @@ class TelegramBot extends Module
             if ($dialog->last_msg_time < time() - 60 && $dialog->quantity_reminder_msg == 0) {
                 $result = Request::sendMessage([
                     'chat_id' => $dialog->chat_id,
-                    'text' => TelegramMessage::find()->where(['key' => '/notification'])->andWhere(['serial_number' => 1])->one()->text,
+                    'text' => TelegramMessage::find()->where(['key' => '/notification'])->andWhere(
+                        ['serial_number' => 1]
+                    )->one()->text,
                 ]);
                 $dialog->quantity_reminder_msg++;
                 $dialog->last_msg_time = time();
@@ -74,7 +76,9 @@ class TelegramBot extends Module
                 $result =
                     Request::sendMessage([
                         'chat_id' => $dialog->chat_id,
-                        'text' => TelegramMessage::find()->where(['key' => '/notification'])->andWhere(['serial_number' => 2])->one()->text,
+                        'text' => TelegramMessage::find()->where(['key' => '/notification'])->andWhere(
+                            ['serial_number' => 2]
+                        )->one()->text,
                     ]);
                 $dialog->quantity_reminder_msg++;
                 $dialog->last_msg_time = time();
@@ -88,7 +92,9 @@ class TelegramBot extends Module
             if ($dialog->last_msg_time < time() - 5 * 60 && $dialog->quantity_reminder_msg == 2) {
                 $result = Request::sendMessage([
                     'chat_id' => $dialog->chat_id,
-                    'text' => TelegramMessage::find()->where(['key' => '/notification'])->andWhere(['serial_number' => 3])->one()->text,
+                    'text' => TelegramMessage::find()->where(['key' => '/notification'])->andWhere(
+                        ['serial_number' => 3]
+                    )->one()->text,
                 ]);
                 $dialog->quantity_reminder_msg++;
                 $dialog->last_msg_time = time();
@@ -122,4 +128,35 @@ class TelegramBot extends Module
             return 'new';
         }
     }
+
+    /**
+     * @throws TelegramException
+     */
+    static function checkUserBlocked(): void
+    {
+        $telegram = new Telegram(Yii::$app->environment->BOT_TOKEN, Yii::$app->environment->BOT_USERNAME);
+        $dialogs = DialogState::find()->all();
+
+        foreach ($dialogs as $dialog) {
+            try {
+                // Пытаемся отправить служебное сообщение
+                $result = Request::sendChatAction([
+                    'chat_id' => $dialog->chat_id,
+                    'action' => 'typing'
+                ]);
+
+                file_put_contents(
+                    Yii::getAlias('@htdocs/uploads') . '/message_updates.txt',
+                    print_r($result, true)
+                );
+                if (!$result->isOk()) {
+                    // Обработка случая, когда пользователь заблокировал бота
+                    DialogState::findOne(['chat_id' => $dialog->chat_id])->delete();
+                }
+            } catch (\Throwable $e) {
+                Yii::error("Error checking user block status: " . $e->getMessage());
+            }
+        }
+    }
+
 }

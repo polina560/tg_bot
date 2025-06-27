@@ -36,7 +36,7 @@ class ShareCommand extends UserCommand
             'chat_id' => $chat_id,
             'text' => 'Выберите чат, в котором хотите поделиться ботом:',
             'reply_markup' => new InlineKeyboard([
-                ['text' => 'Поделиться', 'switch_inline_query' => 'telegram bot'],
+                ['text' => 'Поделиться', 'switch_inline_query' => 'пожалуйста перейди по ссылке... пожалуйста... '],
             ])
         ]);
     }

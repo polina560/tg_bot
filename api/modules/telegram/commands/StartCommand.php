@@ -72,7 +72,6 @@ class StartCommand extends UserCommand
             ]);
             return $result;
         }
-//        return $this->replyToChat($text->text);
     }
 
 

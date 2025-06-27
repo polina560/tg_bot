@@ -18,10 +18,10 @@ class BotController extends Controller
 
     public function actionSet()
     {
-        file_put_contents(
-            Yii::getAlias('@htdocs/uploads') . '/message.txt',
-            print_r(Yii::$app->environment->WEB_HOOK_URL, true)
-        );
+//        file_put_contents(
+//            Yii::getAlias('@htdocs/uploads') . '/message.txt',
+//            print_r(Yii::$app->environment->WEB_HOOK_URL, true)
+//        );
 
         try {
             $telegram = new Telegram(Yii::$app->environment->BOT_TOKEN, Yii::$app->environment->BOT_USERNAME);
@@ -61,10 +61,10 @@ class BotController extends Controller
             $telegram = new Telegram(Yii::$app->environment->BOT_TOKEN, Yii::$app->environment->BOT_USERNAME);
 
             $result = $telegram->deleteWebhook();
-            file_put_contents(
-                Yii::getAlias('@htdocs/uploads') . '/message.txt',
-                print_r($result->getDescription(), true)
-            );
+//            file_put_contents(
+//                Yii::getAlias('@htdocs/uploads') . '/message.txt',
+//                print_r($result->getDescription(), true)
+//            );
         } catch (TelegramException $e) {
             file_put_contents(Yii::getAlias('@htdocs/uploads') . '/message.txt', print_r($e->getMessage(), true));
         }

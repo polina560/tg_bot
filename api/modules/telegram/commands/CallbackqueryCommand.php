@@ -193,7 +193,7 @@ class CallbackqueryCommand extends SystemCommand
         } else {
             return Request::sendMessage([
                 'chat_id' => $chat_id,
-                'text' => 'нет монет'
+                'text' => 'не хватает монет'
             ]);
         }
 
@@ -259,7 +259,7 @@ class CallbackqueryCommand extends SystemCommand
                 array(
                     array(
                         'text' => 'Поделиться',
-                        'switch_inline_query' => 'telegram bot',
+                        'switch_inline_query' => 'подпишись',
                     ),
                 ),
                 array(
